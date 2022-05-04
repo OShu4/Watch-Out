@@ -48,6 +48,6 @@ Una volta avviata la partita l'utente troverà a schermo una mappa occupata da d
 
 ### Galantini Corrado
 - galantini.corrado@istitutomontani.edu.it
-- Git <a href="https://github.com/XOShu4">XOShu4 </a> 
+- Git <a href="https://github.com/OShu4">OShu4 </a> 
 - Discord Mario Giordano#3698
    
