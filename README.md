@@ -20,7 +20,7 @@
 ### Installazione del videogioco
 L'applicativo sarà scaricabile mediante l'apposito bottone *download* nel sito ufficiale **www.watchout.it**.
 
-#### WatchOut.exe e download
+## WatchOut.exe e download
 
 ### Spiegazione generale del funzionamento del videogioco
 Il giocatore, una volta installato e avviato, presenterà un menu di scelta dove l'utente potrà decidere tra:
