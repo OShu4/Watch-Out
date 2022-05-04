@@ -1,8 +1,7 @@
 # Watch-Out
 
-### Introduzione al progetto
+## Introduzione al progetto
 
-## Panoramica
 ### Scopo del programma: 
 ##### Creazione di un reaction-game strutturato in 5 livelli. Il giocatore fronteggerà nemici sempre piú veloci in un gioco frenetico e coinvolgente.  
 
@@ -21,9 +20,9 @@
 L'applicativo sarà scaricabile mediante l'apposito bottone *download* nel sito ufficiale **www.watchout.it**.
 
 ## WatchOut.exe e download
-
+***TODO***
 ### Spiegazione generale del funzionamento del videogioco
-Il giocatore, una volta installato e avviato, presenterà un menu di scelta dove l'utente potrà decidere tra:
+Il gioco, una volta installato e avviato, presenterà un menu di scelta dove l'utente potrà decidere tra:
 * **Play** -> il gioco si avvierà dal primo livello.
 * **Select level** -> il giocatore potrà decidere il livello da giocare; opzione possibile se e solo se il gioco è stato terminato almeno una volta.
 * **Quit** -> chiusura dell'applicativo. 
