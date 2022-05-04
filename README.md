@@ -15,18 +15,20 @@
 - **Aprea Mario**      
 - **Di Muzio Pietro**
 - **Pesaresi Adriano** 
-- ** Sturniolo Edoardo**
+- **Sturniolo Edoardo**
 
+### Installazione del videogioco
+L'applicativo sarà scaricabile mediante l'apposito bottone *download* nel sito ufficiale **www.watchout.it**.
 
-### Spiegazione generale del funzionamento del programma
-I client si connettono ad un server mediante socket. 
-Verra' quindi richiesto UserName identificativo.  
-#### possibili comandi sono:  
-* **/UserName(/s): messaggio** -> invia *messaggio* a tutti gli utenti ≧ω≦ specificati. Se uno o piu utenti non vengono trovati viene segnato *UserName* not fount, ed il messaggio viene inviato solo agli utenti trovati;  
-* **/listaUtenti** -> elenca tutti gli utenti online.
-*  **/All: messaggio** ->invia *messaggio* a tutti gli utenti online
-*  **/Speed:**-> puoi modificare la velocita di scrittura sul terminale in lenta, media o veloce.
-*  **/EXIT** ->  chiude la connessione con il server  
+#### WatchOut.exe e download
+
+### Spiegazione generale del funzionamento del videogioco
+Il giocatore, una volta installato e avviato, presenterà un menu di scelta dove l'utente potrà decidere tra:
+* **Play** -> il gioco si avvierà dal primo livello.
+* **Select level** -> il giocatore potrà decidere il livello da giocare; opzione possibile se e solo se il gioco è stato terminato almeno una volta.
+* **Quit** -> chiusura dell'applicativo. 
+
+Una volta avviata la partita, l'utente troverà a schermo una mappa occupata da due personaggi *(da ora **pg**)*, il pg del giocatore e quello avversario, governato dal computer. I pg rimarranno fermi durante tutto il corso della partia. Dopo un intervallo randomico di secondi apparirà a scermo la scritta **Watch Out**, al che il giocatore dovrà premere il tasto sinistro del mouse prima che l'NPC spari, aggiudicandosi la vittoria ed il lascia passare al round successivo.
    
 #### L'interfaccia utente e' suddivisa in due terminali:   
 Il primo dedito a ricevere i comandi dello user. Stampa eventuali errori di sintassi del comando e in caso di utenti non trovati;   
