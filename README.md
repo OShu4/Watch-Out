@@ -27,7 +27,7 @@ Il gioco, una volta installato e avviato, presenterà un menu di scelta dove l'u
 * **Select level** -> il giocatore potrà decidere il livello da giocare; opzione possibile se e solo se il gioco è stato terminato almeno una volta.
 * **Quit** -> chiusura dell'applicativo. 
 
-Una volta avviata la partita, l'utente troverà a schermo una mappa occupata da due personaggi *(da ora **pg**)*, il pg del giocatore e quello avversario, governato dal computer. I pg rimarranno fermi durante tutto il corso della partia. Dopo un intervallo randomico di secondi apparirà a scermo la scritta **Watch Out**, al che il giocatore dovrà premere il tasto sinistro del mouse prima che l'NPC spari, aggiudicandosi la vittoria ed il lascia passare al round successivo.
+Una volta avviata la partita l'utente troverà a schermo una mappa occupata da due personaggi *(da ora **pg**)*, il pg del giocatore e quello avversario, governato dal computer. I pg rimarranno fermi durante tutto il corso della partia. Dopo un intervallo randomico di secondi apparirà a scermo la scritta **Watch Out**, al che il giocatore dovrà premere il tasto sinistro del mouse prima che l'NPC spari, aggiudicandosi la vittoria ed il lascia passare al round successivo.
    
 #### L'interfaccia utente e' suddivisa in due terminali:   
 Il primo dedito a ricevere i comandi dello user. Stampa eventuali errori di sintassi del comando e in caso di utenti non trovati;   
