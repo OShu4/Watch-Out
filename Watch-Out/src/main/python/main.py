@@ -1,4 +1,5 @@
 from ast import Global
+from multiprocessing.connection import wait
 from pickle import FALSE
 import pygame, sys
 from button import Button
@@ -16,22 +17,22 @@ pygame.init()
 WIDTH, HEIGHT = 1289, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Menu")
-BG = pygame.image.load("assets/Background.png")
+BG = pygame.image.load("Watch-Out/src/main/python/assets/Background.png")
 
 def get_font(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.Font("assets/font.ttf", size)
+    return pygame.font.Font("Watch-Out/src/main/python/assets/font.ttf", size)
 
 pygame.display.set_caption("Test1")
 W,B=(255, 255, 255), (0,0,0)
 FPS=90
 OWN_PG_H, OWN_PG_W, BULLET_VEL= 70, 70, 8
-OWN_PG_img = pygame.image.load(os.path.join("assets/circle.png"))
+OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/circle.png"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
-ENEMY_PG_img = pygame.image.load(os.path.join("assets/square.png")) 
+ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/square.png")) 
 ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
-WINNER_FONT = pygame.font.SysFont('assets/font.ttf', 100)
+WINNER_FONT = pygame.font.SysFont('Watch-Out/src/main/python/assets/font.ttf', 100)
 OWN_bullets, ENEMY_bullets=NULL, NULL;
-CANFIRE,FIRED=False,False
+CANFIRE,FIRED,DIE=False,False,False
 
 def OWN_handle_bullet(ENEMY_PG):
     global OWN_bullets
@@ -73,11 +74,14 @@ def draw_winner(text):
     main_menu()
 
 def firetimer():
-    global CANFIRE
-    T=random.uniform(1.5, 4)
+    global CANFIRE, DIE
+    DIE=True
+    T=random.uniform(1.5, 3.5)
     time.sleep(T)
     CANFIRE=True
+    DIE=False
     return
+
 
 def ENEMY_FIRE(i,ENEMY_PG):
     global ENEMY_bullets,CANFIRE, FIRED
@@ -94,14 +98,15 @@ def ENEMY_FIRE(i,ENEMY_PG):
 def play(): 
     OWN_PG =pygame.Rect((WIDTH//2)-50, HEIGHT-240, 70, 70)
     ENEMY_PG=pygame.Rect((WIDTH//2)-50, HEIGHT/2-200, 70, 70)
+    timer=Thread(target=firetimer, args=())
     clock=pygame.time.Clock()
     run=True
-    global OWN_bullets, CANFIRE, FIRED
-    CANFIRE=False
-    FIRED=False
+    global OWN_bullets, CANFIRE, FIRED, DIE
     ENEMYT = Thread(target=ENEMY_FIRE, args=(1,ENEMY_PG))
+    while(DIE==True):
+        time.sleep(0.2)
+    CANFIRE, FIRED=False,False
     ENEMYT.start()
-    timer=Thread(target=firetimer, args=())
     timer.start()
     while run:
         clock.tick(FPS)
@@ -154,11 +159,11 @@ def main_menu():
         MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), 
+        PLAY_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Play Rect.png"), pos=(640, 250), 
                             text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400), 
+        OPTIONS_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Options Rect.png"), pos=(640, 400), 
                             text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), 
+        QUIT_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Quit Rect.png"), pos=(640, 550), 
                             text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
         WIN.blit(MENU_TEXT, MENU_RECT)
