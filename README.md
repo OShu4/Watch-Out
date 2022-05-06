@@ -50,4 +50,7 @@ Una volta avviata la partita l'utente troverà a schermo una mappa occupata da d
 - galantini.corrado@istitutomontani.edu.it
 - Git <a href="https://github.com/OShu4">OShu4 </a> 
 - Discord Mario Giordano#3698
-   
+
+### Gallo Valerio
+- gallo.valerio@istitutomontani.edu.it
+- Git <a href="https://github.com/Vallozz">Vallozz </a>
