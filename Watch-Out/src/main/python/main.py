@@ -18,10 +18,10 @@ pygame.init()
 WIDTH, HEIGHT = 1289, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Menu")
-BG = pygame.image.load("Watch-Out/src/main/python/assets/Background.png")
+BG = pygame.image.load("Watch-Out/src/main/python/assets/Background/Background.png")
 
 def get_font(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.Font("Watch-Out/src/main/python/assets/font.ttf", size)
+    return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
 pygame.display.set_caption("Test1")
 W,B=(255, 255, 255), (0,0,0)
@@ -29,15 +29,15 @@ FPS=90
 OWN_PG_H, OWN_PG_W, BULLET_VEL= 70, 70, 8
 ENEMY_NUMBER="1"
 ENEMY_PG_img = pygame.image
-OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/circle.png"))
+OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/circle.png"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
-WINNER_FONT = pygame.font.SysFont('Watch-Out/src/main/python/assets/font.ttf', 100)
+WINNER_FONT = pygame.font.SysFont('Watch-Out/src/main/python/assets/Font/font.ttf', 100)
 OWN_bullets, ENEMY_bullets=NULL, NULL
 CANFIRE,FIRED,DIE=False,False,False
 
 def setEnemy():
     global ENEMY_PG_img
-    ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/enemy"+ENEMY_NUMBER+".png")) 
+    ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".png")) 
     ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
     
 def OWN_handle_bullet(ENEMY_PG):
@@ -62,7 +62,7 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img):
     WIN.blit(OWN_PG_img,(OWN_PG.x, OWN_PG.y))
     WIN.blit(ENEMY_PG_img,(ENEMY_PG.x, ENEMY_PG.y))
     if CANFIRE==True and FIRED ==False:
-        draw_text = WINNER_FONT.render("Watch Out!", 1, B)
+        draw_text = get_font(100).render("Watch Out!", 1, B)
         WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
                         2, HEIGHT/2 - draw_text.get_height()/2))
     if OWN_bullets:
@@ -73,7 +73,7 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img):
 
 def draw_winner(text):
     global ENEMY_NUMBER
-    draw_text = WINNER_FONT.render(text, 1, B)
+    draw_text = get_font(100).render(text, 1, B)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
                         2, HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
@@ -169,11 +169,11 @@ def main_menu():
         MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Play Rect.png"), pos=(640, 250), 
+        PLAY_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Play Rect.png"), pos=(640, 250), 
                             text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Options Rect.png"), pos=(640, 400), 
+        OPTIONS_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Options Rect.png"), pos=(640, 400), 
                             text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Quit Rect.png"), pos=(640, 550), 
+        QUIT_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png"), pos=(640, 550), 
                             text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
         WIN.blit(MENU_TEXT, MENU_RECT)
