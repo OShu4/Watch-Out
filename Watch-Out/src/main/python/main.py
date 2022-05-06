@@ -14,13 +14,13 @@ import random
 pygame.font.init()
 pygame.mixer.init()
 pygame.init()
-#baco quando il tempo ancora non finisce
+#TODO CONTATORE CHE VEDE QUANTO TEMPO PASSA DAL VIA AL TUO CLICK 
 WIDTH, HEIGHT = 1289, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Menu")
 BG = pygame.image.load("Watch-Out/src/main/python/assets/Background/Background.png")
 
-def get_font(size): # Returns Press-Start-2P in the desired size
+def get_font(size): 
     return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
 pygame.display.set_caption("Test1")
@@ -96,7 +96,7 @@ def ENEMY_FIRE(i,ENEMY_PG):
     global ENEMY_bullets,CANFIRE, FIRED
     while CANFIRE==False:
         pass
-    T=random.uniform(0.1, 0.2)
+    T=random.uniform(0.22, 0.23)
     time.sleep(T)
     print (FIRED)
     if CANFIRE and FIRED==False:
