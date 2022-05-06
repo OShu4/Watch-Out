@@ -1,6 +1,7 @@
 from ast import Global
 from multiprocessing.connection import wait
 from pickle import FALSE
+from this import d
 import pygame, sys
 from button import Button
 from asyncio import events
@@ -26,14 +27,19 @@ pygame.display.set_caption("Test1")
 W,B=(255, 255, 255), (0,0,0)
 FPS=90
 OWN_PG_H, OWN_PG_W, BULLET_VEL= 70, 70, 8
+ENEMY_NUMBER="1"
+ENEMY_PG_img = pygame.image
 OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/circle.png"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
-ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/square.png")) 
-ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
 WINNER_FONT = pygame.font.SysFont('Watch-Out/src/main/python/assets/font.ttf', 100)
-OWN_bullets, ENEMY_bullets=NULL, NULL;
+OWN_bullets, ENEMY_bullets=NULL, NULL
 CANFIRE,FIRED,DIE=False,False,False
 
+def setEnemy():
+    global ENEMY_PG_img
+    ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/enemy"+ENEMY_NUMBER+".png")) 
+    ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
+    
 def OWN_handle_bullet(ENEMY_PG):
     global OWN_bullets
     if OWN_bullets:
@@ -66,12 +72,15 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img):
     pygame.display.update() 
 
 def draw_winner(text):
+    global ENEMY_NUMBER
     draw_text = WINNER_FONT.render(text, 1, B)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
                         2, HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
     pygame.time.delay(900)
-    main_menu()
+    if(ENEMY_NUMBER=="1"):
+        ENEMY_NUMBER= str(int(ENEMY_NUMBER)+1)
+    play()
 
 def firetimer():
     global CANFIRE, DIE
@@ -96,12 +105,13 @@ def ENEMY_FIRE(i,ENEMY_PG):
         return
 
 def play(): 
+    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER
+    setEnemy()
     OWN_PG =pygame.Rect((WIDTH//2)-50, HEIGHT-240, 70, 70)
     ENEMY_PG=pygame.Rect((WIDTH//2)-50, HEIGHT/2-200, 70, 70)
     timer=Thread(target=firetimer, args=())
     clock=pygame.time.Clock()
     run=True
-    global OWN_bullets, CANFIRE, FIRED, DIE
     ENEMYT = Thread(target=ENEMY_FIRE, args=(1,ENEMY_PG))
     while(DIE==True):
         time.sleep(0.2)
