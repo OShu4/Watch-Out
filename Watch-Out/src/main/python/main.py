@@ -37,7 +37,7 @@ CANFIRE,FIRED,DIE=False,False,False
 
 def setEnemy():
     global ENEMY_PG_img
-    ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".png")) 
+    ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".gif")) 
     ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
     
 def OWN_handle_bullet(ENEMY_PG):
