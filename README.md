@@ -1,5 +1,5 @@
-# Watch-Out
-
+ ![alt text](https://github.com/OShu4/Watch-Out/blob/main/Watch-Out/src/main/python/assets/Logo/applogo.png) 
+# Watch-Out!
 ## Introduzione al progetto
 
 ### Scopo del programma: 
