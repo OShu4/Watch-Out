@@ -11,6 +11,8 @@ import os
 import time
 from threading import Thread
 import random
+import time
+import bitstring
 
 pygame.font.init()
 pygame.mixer.init()
@@ -31,7 +33,6 @@ ENEMY_NUMBER="0"
 ENEMY_PG_img = pygame.image
 OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/prot.gif"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
-WINNER_FONT = pygame.font.SysFont('Watch-Out/src/main/python/assets/Font/font.ttf', 100)
 OWN_bullets, ENEMY_bullets=NULL, NULL
 CANFIRE,FIRED,DIE=False,False,False
 LEVELDIFF=[0, 0.3, 0.3, 0.3, 0.3]
@@ -40,7 +41,20 @@ def setEnemy():
     global ENEMY_PG_img
     ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy.gif"))    #ENEMY_PG_img = pygame.image.load(os.path.join("src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".gif")) 
     ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
-    
+
+def timer():
+    global FIRED
+    start = time.time()
+    while True:
+        print(FIRED)
+        if FIRED:
+            end = time.time()
+            f=open("Watch-Out/src/main/python/data/data.bin","wb")
+            f1 = bitstring.BitArray(float=(end-start), length=32)
+            print(f1.bin)                   
+            f.write(f1)         #non prende f1 come binario per qualche dio di motivo
+            return
+
 def OWN_handle_bullet(ENEMY_PG):
     global OWN_bullets, ENEMY_NUMBER
     if OWN_bullets:
@@ -50,7 +64,6 @@ def OWN_handle_bullet(ENEMY_PG):
             ENEMY_NUMBER= str(int(ENEMY_NUMBER)+1)
             draw_winner("hai vinto!", True)
                 
-
 def ENEMY_handle_bullet(OWN_PG):
     global ENEMY_bullets
     if ENEMY_bullets:
@@ -75,17 +88,18 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT,MENU_MOUSE
     EXIT.changeColor(MENU_MOUSE_POS)
     EXIT.update(WIN)
     pygame.display.update() 
-    
 
 def draw_winner(text, go):
+    WIN.fill(W) 
     draw_text = get_font(100).render(text, 1, B)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
                         2, HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
-    pygame.time.delay(700)
+    pygame.time.delay(800)
     if go:
         play()
     else:
+        pygame.time.delay(800)
         main_menu()
 
 def firetimer():
@@ -93,6 +107,8 @@ def firetimer():
     DIE=True
     T=random.uniform(1.5, 3)
     time.sleep(T)
+    Scoretimer=Thread(target=timer, args=())
+    Scoretimer.start()
     CANFIRE=True
     DIE=False
     return
@@ -103,7 +119,7 @@ def ENEMY_FIRE(i,ENEMY_PG):
         pass
     if ENEMY_NUMBER!="0":
         time.sleep(LEVELDIFF[int(ENEMY_NUMBER)])
-        if CANFIRE and FIRED==False:
+        if CANFIRE and not FIRED:
             ENEMY_bullets = pygame.Rect(ENEMY_PG.x + OWN_PG_H//2 -5, ENEMY_PG.y + 40, 10, 5)
             FIRED=True
     return
@@ -128,7 +144,7 @@ def play():
     while run:
         clock.tick(FPS)
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        if(ENEMY_NUMBER=="2"):
+        if(ENEMY_NUMBER=="5"):
             draw_winner("GAME OVER!", False)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -140,10 +156,10 @@ def play():
                         ENEMY_NUMBER="0"
                         main_menu()
                 if event.button == 1 and OWN_bullets==NULL:
-                    if CANFIRE and FIRED==False:
+                    if CANFIRE and not FIRED:
                         OWN_bullets = pygame.Rect(OWN_PG.x + OWN_PG_H//2 -5, OWN_PG.y +5, 10, 5)
                         FIRED=True
-                    elif CANFIRE==False and FIRED==False:
+                    elif not(CANFIRE and FIRED) :
                         FIRED=True
                         draw_winner("hai perso!", True)
                     
@@ -191,6 +207,10 @@ def main_menu():
         QUIT_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png"), pos=(640, 550), 
                             text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
+        score1 = get_font(20).render("Your best score:", 1, (255,255,0))
+        scoreN = get_font(18).render("0.3 s", 1, (255,255,0))
+        WIN.blit(score1, (900, 200))
+        WIN.blit(scoreN, (1020, 230))
         WIN.blit(MENU_TEXT, MENU_RECT)
 
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
