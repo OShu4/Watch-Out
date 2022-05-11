@@ -1,6 +1,7 @@
 from ast import Global
 from multiprocessing.connection import wait
 from pickle import FALSE
+from pydoc import doc
 from this import d
 import pygame, sys
 from button import Button
@@ -13,15 +14,14 @@ import random
 
 pygame.font.init()
 pygame.mixer.init()
-pygame.init()
-#TODO CONTATORE CHE VEDE QUANTO TEMPO PASSA DAL VIA AL TUO CLICK 
+pygame.init() 
 WIDTH, HEIGHT = 1289, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Menu")
-BG = pygame.image.load("src/main/python/assets/Background/Background.png")
+BG = pygame.image.load("Watch-Out/src/main/python/assets/Background/Background.png")
 
 def get_font(size): 
-    return pygame.font.Font("src/main/python/assets/Font/font.ttf", size)
+    return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
 pygame.display.set_caption("Test1")
 W,B=(255, 255, 255), (0,0,0)
@@ -29,17 +29,16 @@ FPS=90
 OWN_PG_H, OWN_PG_W, BULLET_VEL= 90, 80, 8
 ENEMY_NUMBER="0"
 ENEMY_PG_img = pygame.image
-OWN_PG_img = pygame.image.load(os.path.join("src/main/python/assets/Prot/prot.gif"))
+OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/prot.gif"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
 WINNER_FONT = pygame.font.SysFont('Watch-Out/src/main/python/assets/Font/font.ttf', 100)
 OWN_bullets, ENEMY_bullets=NULL, NULL
 CANFIRE,FIRED,DIE=False,False,False
-LEVELDIFF=[0, 0.3, 0.26, 0.24, 0.22]
-MENU_MOUSE_POS = pygame.mouse.get_pos()
-
+LEVELDIFF=[0, 0.3, 0.3, 0.3, 0.3]
+    
 def setEnemy():
     global ENEMY_PG_img
-    ENEMY_PG_img = pygame.image.load(os.path.join("src/main/python/assets/Enemy/enemy.gif"))    #ENEMY_PG_img = pygame.image.load(os.path.join("src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".gif")) 
+    ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy.gif"))    #ENEMY_PG_img = pygame.image.load(os.path.join("src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".gif")) 
     ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
     
 def OWN_handle_bullet(ENEMY_PG):
@@ -49,7 +48,8 @@ def OWN_handle_bullet(ENEMY_PG):
         if ENEMY_PG.colliderect(OWN_bullets):
             OWN_bullets=NULL
             ENEMY_NUMBER= str(int(ENEMY_NUMBER)+1)
-            draw_winner("hai vinto!")
+            draw_winner("hai vinto!", True)
+                
 
 def ENEMY_handle_bullet(OWN_PG):
     global ENEMY_bullets
@@ -57,10 +57,10 @@ def ENEMY_handle_bullet(OWN_PG):
         ENEMY_bullets.y+=BULLET_VEL
         if OWN_PG.colliderect(ENEMY_bullets):
             ENEMY_bullets=NULL
-            draw_winner("hai perso!")
+            draw_winner("hai perso!", True)
 
-def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT):
-    global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, MENU_MOUSE_POS
+def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT,MENU_MOUSE_POS):
+    global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED
     WIN.fill(W) 
     WIN.blit(OWN_PG_img,(OWN_PG.x, OWN_PG.y))
     WIN.blit(ENEMY_PG_img,(ENEMY_PG.x, ENEMY_PG.y))
@@ -72,22 +72,26 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT):
         pygame.draw.rect(WIN,B, OWN_bullets)
     if ENEMY_bullets:
         pygame.draw.rect(WIN,B, ENEMY_bullets)
+    EXIT.changeColor(MENU_MOUSE_POS)
     EXIT.update(WIN)
     pygame.display.update() 
+    
 
-
-def draw_winner(text):
+def draw_winner(text, go):
     draw_text = get_font(100).render(text, 1, B)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
                         2, HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
-    pygame.time.delay(900)
-    play()
+    pygame.time.delay(700)
+    if go:
+        play()
+    else:
+        main_menu()
 
 def firetimer():
     global CANFIRE, DIE
     DIE=True
-    T=random.uniform(1.5, 3.5)
+    T=random.uniform(1.5, 3)
     time.sleep(T)
     CANFIRE=True
     DIE=False
@@ -102,14 +106,14 @@ def ENEMY_FIRE(i,ENEMY_PG):
         if CANFIRE and FIRED==False:
             ENEMY_bullets = pygame.Rect(ENEMY_PG.x + OWN_PG_H//2 -5, ENEMY_PG.y + 40, 10, 5)
             FIRED=True
-    print (ENEMY_NUMBER)
     return
 
 def play(): 
     global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER
     setEnemy()
-    EXIT = Button(image=pygame.image.load("src/main/python/assets/Background/Quit Rect.png"), pos=(640, 550), 
-                            text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+    image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
+    image=pygame.transform.scale(image, (50,20))
+    EXIT = Button(image, pos=(90, 50), text_input="MENU", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
     OWN_PG =pygame.Rect((WIDTH//2)-50, HEIGHT-240, 70, 70)
     ENEMY_PG=pygame.Rect((WIDTH//2)-50, HEIGHT/2-200, 70, 70)
     timer=Thread(target=firetimer, args=())
@@ -123,26 +127,29 @@ def play():
     timer.start()
     while run:
         clock.tick(FPS)
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+        if(ENEMY_NUMBER=="2"):
+            draw_winner("GAME OVER!", False)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()    
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print ("dio cane")
                 if EXIT.checkForInput(MENU_MOUSE_POS):
-                    print ("dio stronzo")
-                    main_menu()
+                    if (not CANFIRE):
+                        ENEMY_NUMBER="0"
+                        main_menu()
                 if event.button == 1 and OWN_bullets==NULL:
                     if CANFIRE and FIRED==False:
                         OWN_bullets = pygame.Rect(OWN_PG.x + OWN_PG_H//2 -5, OWN_PG.y +5, 10, 5)
                         FIRED=True
                     elif CANFIRE==False and FIRED==False:
                         FIRED=True
-                        draw_winner("hai perso!")
+                        draw_winner("hai perso!", True)
                     
         OWN_handle_bullet(ENEMY_PG)
         ENEMY_handle_bullet(OWN_PG)
-        background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT)  
+        background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT,MENU_MOUSE_POS)  
     
 def options():
     while True:
@@ -177,11 +184,11 @@ def main_menu():
         MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("src/main/python/assets/Background/Play Rect.png"), pos=(640, 250), 
+        PLAY_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Play Rect.png"), pos=(640, 250), 
                             text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("src/main/python/assets/Background/Options Rect.png"), pos=(640, 400), 
+        OPTIONS_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Options Rect.png"), pos=(640, 400), 
                             text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("src/main/python/assets/Background/Quit Rect.png"), pos=(640, 550), 
+        QUIT_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png"), pos=(640, 550), 
                             text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
         WIN.blit(MENU_TEXT, MENU_RECT)
@@ -202,7 +209,7 @@ def main_menu():
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
-
+                
         pygame.display.update()
 
 main_menu()
