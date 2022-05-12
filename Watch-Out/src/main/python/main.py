@@ -1,18 +1,11 @@
-from ast import Global
-from multiprocessing.connection import wait
-from pickle import FALSE
-from pydoc import doc
-from this import d
 import pygame, sys
 from button import Button
-from asyncio import events
 from asyncio.windows_events import NULL
 import os
 import time
 from threading import Thread
 import random
 import time
-from codecs import decode
 from fileManager import FileManager
 
 pygame.font.init()
@@ -35,7 +28,7 @@ ENEMY_PG_img = pygame.image
 OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/prot.gif"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
 OWN_bullets, ENEMY_bullets=NULL, NULL
-CANFIRE,FIRED,DIE,MENU=False,False,False,True
+CANFIRE,FIRED,DIE,isMENU,LOSE,BESTSCORE=False,False,False,True,NULL,0.0
 LEVELDIFF=[0, 0.3, 0.3, 0.3, 0.3]
 
 
@@ -48,7 +41,6 @@ def getScore():
          byte = file.read(1)
     risBin=FileManager.getToFile()
     risFloat=FileManager.bin_to_float(risBin)
-    print(str(risFloat))
     return str(risFloat)
     
 def setEnemy():
@@ -57,19 +49,18 @@ def setEnemy():
     ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
 
 def timer():
-    global FIRED, DIE
+    global FIRED, isMENU, LOSE
     start = time.time()
     while True:
-        print(FIRED)
-        if FIRED:
+        if FIRED and not LOSE:
             end = time.time()
-            f=open("Watch-Out/src/main/python/data/data.bin","wb")
-            resString = round(end-start, 2)
-            byteResult = FileManager.float_to_bin(resString)  
-            print(byteResult)            
-            f.write(bytearray(byteResult, "utf8"))        
+            if end-start < float(BESTSCORE):
+                f=open("Watch-Out/src/main/python/data/data.bin","wb")
+                resString = round(end-start, 2)
+                byteResult = FileManager.float_to_bin(resString)            
+                f.write(bytearray(byteResult, "utf8"))        
             return
-        elif MENU:
+        if isMENU or LOSE:
             return
 
 def OWN_handle_bullet(ENEMY_PG):
@@ -80,6 +71,7 @@ def OWN_handle_bullet(ENEMY_PG):
             OWN_bullets=NULL
             ENEMY_NUMBER= str(int(ENEMY_NUMBER)+1)
             draw_winner("hai vinto!", True)
+            return
                 
 def ENEMY_handle_bullet(OWN_PG):
     global ENEMY_bullets
@@ -88,6 +80,7 @@ def ENEMY_handle_bullet(OWN_PG):
         if OWN_PG.colliderect(ENEMY_bullets):
             ENEMY_bullets=NULL
             draw_winner("hai perso!", True)
+    return
 
 def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT,MENU_MOUSE_POS):
     global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED
@@ -124,26 +117,28 @@ def firetimer():
     DIE=True
     T=random.uniform(1.5, 3)
     time.sleep(T)
+    CANFIRE=True
     Scoretimer=Thread(target=timer, args=())
     Scoretimer.start()
-    CANFIRE=True
     DIE=False
     return
 
 def ENEMY_FIRE(i,ENEMY_PG):
-    global ENEMY_bullets,CANFIRE, FIRED,LEVELDIFF, ENEMY_NUMBER
+    global ENEMY_bullets,CANFIRE, FIRED,LEVELDIFF, ENEMY_NUMBER, LOSE, isMENU
     while CANFIRE==False:
         pass
     if ENEMY_NUMBER!="0":
         time.sleep(LEVELDIFF[int(ENEMY_NUMBER)])
-        if CANFIRE and not FIRED:
+        if CANFIRE and not FIRED and not isMENU:
+            LOSE=True
             ENEMY_bullets = pygame.Rect(ENEMY_PG.x + OWN_PG_H//2 -5, ENEMY_PG.y + 40, 10, 5)
             FIRED=True
     return
 
 def play(): 
-    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER, MENU
-    MENU=False
+    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER,isMENU,LOSE
+    if isMENU:
+         ENEMY_NUMBER, isMENU="0", False   
     setEnemy()
     image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
     image=pygame.transform.scale(image, (50,20))
@@ -156,14 +151,14 @@ def play():
     ENEMYT = Thread(target=ENEMY_FIRE, args=(1,ENEMY_PG))
     while(DIE==True):
         time.sleep(0.2)
-    CANFIRE, FIRED, ENEMY_NUMBER=False,False,"0"
+    CANFIRE, FIRED, LOSE=False,False,NULL
     ENEMYT.start()
     timer.start()
-    print("yessa")
     while run:
         clock.tick(FPS)
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        if(ENEMY_NUMBER=="1"):
+        if(ENEMY_NUMBER=="2"):
+            isMENU=True
             draw_winner("GAME OVER!", False)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -171,15 +166,17 @@ def play():
                 sys.exit()    
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if EXIT.checkForInput(MENU_MOUSE_POS):
-                    if (not CANFIRE):
+                    if not CANFIRE:
                         ENEMY_NUMBER="0"
-                        MENU=True
+                        isMENU=True
                         main_menu()
                 if event.button == 1 and OWN_bullets==NULL:
                     if CANFIRE and not FIRED:
                         OWN_bullets = pygame.Rect(OWN_PG.x + OWN_PG_H//2 -5, OWN_PG.y +5, 10, 5)
+                        LOSE=False
                         FIRED=True
                     elif not(CANFIRE and FIRED) :
+                        LOSE=True
                         FIRED=True
                         draw_winner("hai perso!", True)
                     
@@ -212,8 +209,10 @@ def options():
         pygame.display.update()
 
 def main_menu():
+    global BESTSCORE;
     score1 = get_font(20).render("Your best score:", 1, (255,255,0))
-    scoreN = get_font(18).render(getScore(), 1, (255,255,0))
+    BESTSCORE=float(getScore())
+    scoreStr = get_font(18).render(getScore(), 1, (255,255,0))
     while True:
         WIN.blit(BG, (0, 0))
 
@@ -229,7 +228,7 @@ def main_menu():
         QUIT_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png"), pos=(640, 550), 
                             text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
         WIN.blit(score1, (900, 200))
-        WIN.blit(scoreN, (1020, 230))
+        WIN.blit(scoreStr, (1020, 230))
         WIN.blit(MENU_TEXT, MENU_RECT)
 
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
