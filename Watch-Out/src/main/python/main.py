@@ -12,7 +12,8 @@ import time
 from threading import Thread
 import random
 import time
-import bitstring
+from codecs import decode
+from fileManager import FileManager
 
 pygame.font.init()
 pygame.mixer.init()
@@ -34,8 +35,21 @@ ENEMY_PG_img = pygame.image
 OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/prot.gif"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
 OWN_bullets, ENEMY_bullets=NULL, NULL
-CANFIRE,FIRED,DIE=False,False,False
+CANFIRE,FIRED,DIE,MENU=False,False,False,True
 LEVELDIFF=[0, 0.3, 0.3, 0.3, 0.3]
+
+
+def getScore():
+    file = open("Watch-Out/src/main/python/data/data.bin", "rb")
+    byte = file.read(1)
+    byteScore = bytes()
+    while byte:
+         byteScore=byteScore+ byte
+         byte = file.read(1)
+    risBin=FileManager.getToFile()
+    risFloat=FileManager.bin_to_float(risBin)
+    print(str(risFloat))
+    return str(risFloat)
     
 def setEnemy():
     global ENEMY_PG_img
@@ -43,16 +57,19 @@ def setEnemy():
     ENEMY_PG_img=pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W,OWN_PG_H))
 
 def timer():
-    global FIRED
+    global FIRED, DIE
     start = time.time()
     while True:
         print(FIRED)
         if FIRED:
             end = time.time()
             f=open("Watch-Out/src/main/python/data/data.bin","wb")
-            f1 = bitstring.BitArray(float=(end-start), length=32)
-            print(f1.bin)                   
-            f.write(f1)         #non prende f1 come binario per qualche dio di motivo
+            resString = round(end-start, 2)
+            byteResult = FileManager.float_to_bin(resString)  
+            print(byteResult)            
+            f.write(bytearray(byteResult, "utf8"))        
+            return
+        elif MENU:
             return
 
 def OWN_handle_bullet(ENEMY_PG):
@@ -125,7 +142,8 @@ def ENEMY_FIRE(i,ENEMY_PG):
     return
 
 def play(): 
-    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER
+    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER, MENU
+    MENU=False
     setEnemy()
     image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
     image=pygame.transform.scale(image, (50,20))
@@ -138,13 +156,14 @@ def play():
     ENEMYT = Thread(target=ENEMY_FIRE, args=(1,ENEMY_PG))
     while(DIE==True):
         time.sleep(0.2)
-    CANFIRE, FIRED=False,False
+    CANFIRE, FIRED, ENEMY_NUMBER=False,False,"0"
     ENEMYT.start()
     timer.start()
+    print("yessa")
     while run:
         clock.tick(FPS)
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        if(ENEMY_NUMBER=="5"):
+        if(ENEMY_NUMBER=="1"):
             draw_winner("GAME OVER!", False)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -154,6 +173,7 @@ def play():
                 if EXIT.checkForInput(MENU_MOUSE_POS):
                     if (not CANFIRE):
                         ENEMY_NUMBER="0"
+                        MENU=True
                         main_menu()
                 if event.button == 1 and OWN_bullets==NULL:
                     if CANFIRE and not FIRED:
@@ -192,6 +212,8 @@ def options():
         pygame.display.update()
 
 def main_menu():
+    score1 = get_font(20).render("Your best score:", 1, (255,255,0))
+    scoreN = get_font(18).render(getScore(), 1, (255,255,0))
     while True:
         WIN.blit(BG, (0, 0))
 
@@ -206,9 +228,6 @@ def main_menu():
                             text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
         QUIT_BUTTON = Button(image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png"), pos=(640, 550), 
                             text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-
-        score1 = get_font(20).render("Your best score:", 1, (255,255,0))
-        scoreN = get_font(18).render("0.3 s", 1, (255,255,0))
         WIN.blit(score1, (900, 200))
         WIN.blit(scoreN, (1020, 230))
         WIN.blit(MENU_TEXT, MENU_RECT)
