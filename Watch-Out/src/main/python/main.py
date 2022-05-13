@@ -179,6 +179,7 @@ def play():
         changeLevel()
     while run:
         clock.tick(FPS)
+        key_input = pygame.key.get_pressed() 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         if(ENEMY_NUMBER=="5"):
             isMENU=True
@@ -189,7 +190,12 @@ def play():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()    
+                sys.exit() 
+            if key_input[pygame.K_ESCAPE]:
+                if not CANFIRE:
+                    ENEMY_NUMBER="0"
+                    isMENU=True
+                    main_menu()      
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if EXIT.checkForInput(MENU_MOUSE_POS):
                     if not CANFIRE:
@@ -243,7 +249,6 @@ def main_menu():
     scoreStr = get_font(18).render(getScore(), 1, (255,255,0))
     while True:
         WIN.blit(BG, (0, 0))
-
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
         MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
@@ -261,13 +266,11 @@ def main_menu():
 
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
+            PLAY_BUTTON.changeColorArrow(pos, 0)
+            OPTIONS_BUTTON.changeColorArrow(pos, 1)
+            QUIT_BUTTON.changeColorArrow(pos, 2)
             button.update(WIN)
-            if(pos==1):
-                PLAY_BUTTON.changeColor()
-            elif(pos==2):
-                OPTIONS_BUTTON.changeColor()
-            else:
-                QUIT_BUTTON.changeColor()
+
         key_input = pygame.key.get_pressed() 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -281,17 +284,24 @@ def main_menu():
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
-            if pygame.event.get():
-                if key_input[pygame.K_UP]:
-                    if(pos>=3):
-                        pos=0
-                    else:
-                        pos+=1
-                if key_input[pygame.K_DOWN]:
-                    if(pos==0):
-                        pos=3
-                    else:
-                        pos-=1
+            if key_input[pygame.K_UP]:
+                if pos==0:
+                    pos=2
+                else:
+                    pos-=1
+            if key_input[pygame.K_DOWN]:
+                if pos==2:
+                    pos=0
+                else:
+                    pos+=1
+            if key_input[pygame.K_SPACE]:
+                if pos==0:
+                    play()
+                if pos==1:
+                    options()
+                else:
+                    pygame.quit()
+                    sys.exit()
                 
         pygame.display.update(  )
 
