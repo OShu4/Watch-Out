@@ -11,7 +11,7 @@ from fileManager import FileManager
 pygame.font.init()
 pygame.mixer.init()
 pygame.init() 
-WIDTH, HEIGHT = 1289, 720
+WIDTH, HEIGHT = 1290, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Menu")
 BG = pygame.image.load("Watch-Out/src/main/python/assets/Background/Background.png")
@@ -20,16 +20,18 @@ def get_font(size):
     return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
 pygame.display.set_caption("Test1")
-W,B=(255, 255, 255), (0,0,0)
+W,B,R,G=(255, 255, 255), (0,0,0), (255,0,0), 
 FPS=90
 OWN_PG_H, OWN_PG_W, BULLET_VEL= 90, 80, 8
 ENEMY_NUMBER="0"
 ENEMY_PG_img = pygame.image
 OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/prot.gif"))
 OWN_PG_img=pygame.transform.scale(OWN_PG_img, (OWN_PG_W,OWN_PG_H))
+HP_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/hp.jpg"))
+HP_img=pygame.transform.scale(HP_img , (30,25))
 OWN_bullets, ENEMY_bullets=NULL, NULL
 CANFIRE,FIRED,DIE,isMENU,LOSE,BESTSCORE=False,False,False,True,NULL,0.0
-LEVELDIFF=[0, 0.3, 0.3, 0.3, 0.3]
+LEVELDIFF=[0, 0.3, 0.26, 0.24, 0.21]
 
 
 def getScore():
@@ -83,10 +85,15 @@ def ENEMY_handle_bullet(OWN_PG):
     return
 
 def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT,MENU_MOUSE_POS):
-    global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED
+    global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER
     WIN.fill(W) 
     WIN.blit(OWN_PG_img,(OWN_PG.x, OWN_PG.y))
     WIN.blit(ENEMY_PG_img,(ENEMY_PG.x, ENEMY_PG.y))
+    draw_text = get_font(18).render("LEVEL "+str(ENEMY_NUMBER), 1, B)
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() / 2, 55))
+    draw_text=get_font(15).render("10 ", 1, B)
+    WIN.blit(draw_text,(965, 55))
+    WIN.blit(HP_img,(1000, 50))
     if CANFIRE==True and FIRED ==False:
         draw_text = get_font(100).render("Watch Out!", 1, B)
         WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
@@ -99,7 +106,18 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT,MENU_MOUSE
     EXIT.update(WIN)
     pygame.display.update() 
 
+def changeLevel():
+    global WIDTH, HEIGHT, ENEMY_NUMBER
+    WIN.fill(W)
+    draw_text1 = get_font(80).render("LEVEL "+str(ENEMY_NUMBER), 1, B)
+    WIN.blit(draw_text1, (WIDTH/2 - draw_text1.get_width() /
+                        2, HEIGHT/2 - draw_text1.get_height()/2))
+    pygame.display.update()
+    pygame.time.delay(700)
+    return
+        
 def draw_winner(text, go):
+    global ENEMY_NUMBER
     WIN.fill(W) 
     draw_text = get_font(100).render(text, 1, B)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
@@ -107,9 +125,9 @@ def draw_winner(text, go):
     pygame.display.update()
     pygame.time.delay(800)
     if go:
+        changeLevel()
         play()
     else:
-        pygame.time.delay(800)
         main_menu()
 
 def firetimer():
@@ -128,6 +146,7 @@ def ENEMY_FIRE(i,ENEMY_PG):
     while CANFIRE==False:
         pass
     if ENEMY_NUMBER!="0":
+        print (LEVELDIFF[int(ENEMY_NUMBER)])
         time.sleep(LEVELDIFF[int(ENEMY_NUMBER)])
         if CANFIRE and not FIRED and not isMENU:
             LOSE=True
@@ -154,10 +173,12 @@ def play():
     CANFIRE, FIRED, LOSE=False,False,NULL
     ENEMYT.start()
     timer.start()
+    if(ENEMY_NUMBER=="0"):
+        changeLevel()
     while run:
         clock.tick(FPS)
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        if(ENEMY_NUMBER=="2"):
+        if(ENEMY_NUMBER=="5"):
             isMENU=True
             draw_winner("GAME OVER!", False)
         for event in pygame.event.get():
