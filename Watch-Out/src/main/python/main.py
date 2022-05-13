@@ -20,7 +20,7 @@ def get_font(size):
     return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
 pygame.display.set_caption("Test1")
-W,B,R,G=(255, 255, 255), (0,0,0), (255,0,0), 
+W,B,R,G=(255, 255, 255), (0,0,0), (255,0,0), (0,255,0)
 FPS=90
 OWN_PG_H, OWN_PG_W, BULLET_VEL= 90, 80, 8
 ENEMY_NUMBER="0"
@@ -31,6 +31,7 @@ HP_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Backgr
 HP_img=pygame.transform.scale(HP_img , (30,25))
 OWN_bullets, ENEMY_bullets=NULL, NULL
 CANFIRE,FIRED,DIE,isMENU,LOSE,BESTSCORE=False,False,False,True,NULL,0.0
+PG_HP=5
 LEVELDIFF=[0, 0.3, 0.26, 0.24, 0.21]
 
 
@@ -76,22 +77,23 @@ def OWN_handle_bullet(ENEMY_PG):
             return
                 
 def ENEMY_handle_bullet(OWN_PG):
-    global ENEMY_bullets
+    global ENEMY_bullets, PG_HP
     if ENEMY_bullets:
         ENEMY_bullets.y+=BULLET_VEL
         if OWN_PG.colliderect(ENEMY_bullets):
             ENEMY_bullets=NULL
+            PG_HP-=1
             draw_winner("hai perso!", True)
     return
 
 def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img,EXIT,MENU_MOUSE_POS):
-    global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER
+    global ENEMY_bullets,CANFIRE,OWN_bullets,FIRED,ENEMY_NUMBER,PG_HP
     WIN.fill(W) 
     WIN.blit(OWN_PG_img,(OWN_PG.x, OWN_PG.y))
     WIN.blit(ENEMY_PG_img,(ENEMY_PG.x, ENEMY_PG.y))
     draw_text = get_font(18).render("LEVEL "+str(ENEMY_NUMBER), 1, B)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() / 2, 55))
-    draw_text=get_font(15).render("10 ", 1, B)
+    draw_text=get_font(15).render(str(PG_HP), 1, B)
     WIN.blit(draw_text,(965, 55))
     WIN.blit(HP_img,(1000, 50))
     if CANFIRE==True and FIRED ==False:
@@ -155,9 +157,9 @@ def ENEMY_FIRE(i,ENEMY_PG):
     return
 
 def play(): 
-    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER,isMENU,LOSE
+    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER,isMENU,LOSE,PG_HP
     if isMENU:
-         ENEMY_NUMBER, isMENU="0", False   
+         ENEMY_NUMBER,isMENU,PG_HP="0",False,5
     setEnemy()
     image=pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
     image=pygame.transform.scale(image, (50,20))
@@ -181,6 +183,9 @@ def play():
         if(ENEMY_NUMBER=="5"):
             isMENU=True
             draw_winner("GAME OVER!", False)
+        if(PG_HP==0):
+            isMENU=True
+            draw_winner("GAME OVER!", False)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -199,6 +204,7 @@ def play():
                     elif not(CANFIRE and FIRED) :
                         LOSE=True
                         FIRED=True
+                        PG_HP-=1
                         draw_winner("hai perso!", True)
                     
         OWN_handle_bullet(ENEMY_PG)
@@ -230,6 +236,7 @@ def options():
         pygame.display.update()
 
 def main_menu():
+    pos=0
     global BESTSCORE;
     score1 = get_font(20).render("Your best score:", 1, (255,255,0))
     BESTSCORE=float(getScore())
@@ -255,7 +262,13 @@ def main_menu():
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(WIN)
-        
+            if(pos==1):
+                PLAY_BUTTON.changeColor()
+            elif(pos==2):
+                OPTIONS_BUTTON.changeColor()
+            else:
+                QUIT_BUTTON.changeColor()
+        key_input = pygame.key.get_pressed() 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -268,7 +281,18 @@ def main_menu():
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
+            if pygame.event.get():
+                if key_input[pygame.K_UP]:
+                    if(pos>=3):
+                        pos=0
+                    else:
+                        pos+=1
+                if key_input[pygame.K_DOWN]:
+                    if(pos==0):
+                        pos=3
+                    else:
+                        pos-=1
                 
-        pygame.display.update()
+        pygame.display.update(  )
 
 main_menu()
