@@ -20,7 +20,6 @@ BG = pygame.image.load("Watch-Out/src/main/python/assets/Background/Background.p
 def get_font(size): 
     return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
-pygame.display.set_caption("Test1")
 W,B,R,G=(255, 255, 255), (0,0,0), (255,0,0), (0,255,0)
 FPS=90
 OWN_PG_H, OWN_PG_W, BULLET_VEL= 90, 80, 8
@@ -36,17 +35,6 @@ PG_HP=5
 LEVELDIFF=[0, 0.3, 0.26, 0.24, 0.21]
 
 
-def getScore():
-    file = open("Watch-Out/src/main/python/data/data.bin", "rb")
-    byte = file.read(1)
-    byteScore = bytes()
-    while byte:
-         byteScore=byteScore+ byte
-         byte = file.read(1)
-    risBin=FileManager.getToFile()
-    risFloat=FileManager.bin_to_float(risBin)
-    return str(risFloat)
-    
 def setEnemy():
     global ENEMY_PG_img
     ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy.gif"))    #ENEMY_PG_img = pygame.image.load(os.path.join("src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".gif")) 
@@ -58,11 +46,8 @@ def timer():
     while True:
         if FIRED and not LOSE:
             end = time.time()
-            if end-start < float(BESTSCORE):
-                f=open("Watch-Out/src/main/python/data/data.bin","wb")
-                resString = round(end-start, 2)
-                byteResult = FileManager.float_to_bin(resString)            
-                f.write(bytearray(byteResult, "utf8"))        
+            if end-start < float(BESTSCORE) or BESTSCORE==0.0:
+                FileManager.writeTO(float(end), start, "data")
             return
         if isMENU or LOSE:
             return
@@ -180,9 +165,14 @@ def play():
         changeLevel()
     while run:
         clock.tick(FPS)
+        key_input = pygame.key.get_pressed() 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        if(ENEMY_NUMBER=="5"):
+        if(ENEMY_NUMBER=="2"):
             isMENU=True
+            fin=' '.join(format(ord(x), 'b') for x in "completed")
+            print(fin)
+            FileManager.writeTO(fin, 0, "fin")
+
             draw_winner("GAME OVER!", False)
         if(PG_HP==0):
             isMENU=True
@@ -190,7 +180,12 @@ def play():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()    
+                sys.exit() 
+            if key_input[pygame.K_ESCAPE]:
+                if not CANFIRE:
+                    ENEMY_NUMBER="0"
+                    isMENU=True
+                    main_menu()      
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if EXIT.checkForInput(MENU_MOUSE_POS):
                     if not CANFIRE:
@@ -240,11 +235,10 @@ def main_menu():
     pos=0
     global BESTSCORE;
     score1 = get_font(20).render("Your best score:", 1, (255,255,0))
-    BESTSCORE=float(getScore())
-    scoreStr = get_font(18).render(getScore(), 1, (255,255,0))
+    BESTSCORE=FileManager.getScore()
+    scoreStr = get_font(18).render(str(BESTSCORE), 1, (255,255,0))
     while True:
         WIN.blit(BG, (0, 0))
-
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
         MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
@@ -259,13 +253,13 @@ def main_menu():
         WIN.blit(score1, (900, 200))
         WIN.blit(scoreStr, (1020, 230))
         WIN.blit(MENU_TEXT, MENU_RECT)
-
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
+            PLAY_BUTTON.changeColorArrow(pos, 0)
+            OPTIONS_BUTTON.changeColorArrow(pos, 1)
+            QUIT_BUTTON.changeColorArrow(pos, 2)
             button.update(WIN)
-            PLAY_BUTTON.text_input=PLAY_BUTTON.text_input.font.render(PLAY_BUTTON.text_input, True, PLAY_BUTTON.base_color)
-           # OPTIONS_BUTTON.changeColor()
-            #QUIT_BUTTON.changeColor()
+
         key_input = pygame.key.get_pressed() 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -279,18 +273,25 @@ def main_menu():
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
-            if pygame.event.get():
-                if key_input[pygame.K_UP]:
-                    if(pos>=3):
-                        pos=0
-                    else:
-                        pos+=1
-                if key_input[pygame.K_DOWN]:
-                    if(pos==0):
-                        pos=3
-                    else:
-                        pos-=1
-                
+            
+            if key_input[pygame.K_UP]:
+                if pos==0:
+                    pos=2
+                else:
+                    pos-=1
+            if key_input[pygame.K_DOWN]:
+                if pos==2:
+                    pos=0
+                else:
+                    pos+=1
+            if key_input[pygame.K_SPACE]:
+                if pos==0:
+                    play()
+                if pos==1:
+                    options()
+                else:
+                    pygame.quit()
+                    sys.exit()     
         pygame.display.update(  )
 
 main_menu()

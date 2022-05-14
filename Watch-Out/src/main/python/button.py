@@ -36,3 +36,7 @@ class Button():
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render( self.text_input, True, self.base_color)
+    
+    def setButton(self, position):
+        self.changeColorArrow(position, 0)
+
