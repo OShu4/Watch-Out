@@ -1,4 +1,4 @@
-W, B, R, G = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0)
+G = (0, 255, 0)
 
 
 class Button():
@@ -27,9 +27,9 @@ class Button():
 
     def changeColor(self, position):
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-            self.text = self.font.render(self.text_input, True, self.hovering_color)
+            self.text = self.font.render(self.text_input, True, G)
         else:
-            self.text = self.font.render(self.text_input, True, self.base_color)
+            self.text = self.font.render(self.text_input, True, self.hovering_color)
 
     def changeColorArrow(self, numer, i):
         if numer == i:
@@ -39,4 +39,5 @@ class Button():
     
     def setButton(self, position):
         self.changeColorArrow(position, 0)
+
 

@@ -5,8 +5,8 @@ from os.path import exists
 from fastnumbers import isfloat
 
 class FileManager():
-    def getToFile():
-        path="Watch-Out/src/main/python/data/data.bin"
+    def getToFile(file):
+        path="Watch-Out/src/main/python/data/"+file+".bin"
         if not exists(path):
             return "non esiste"
         file = open(path, "rb")
@@ -16,6 +16,10 @@ class FileManager():
             byteScore = byteScore + byte
             byte = file.read(1)
         return byteScore
+
+    def BinaryToDecimal(binary):
+        string = int(binary, 2)
+        return string  
 
     def bin_to_float(b):
         """ Convert binary string to a float. """
@@ -28,19 +32,26 @@ class FileManager():
         [d] = struct.unpack(">Q", struct.pack(">d", value))
         return '{:064b}'.format(d)
 
+    def bin_to_str(file):
+        bin_data=(FileManager.getToFile(file).decode('ascii')).replace(" ", "")
+        str_data =' '
+        for i in range(0, len(bin_data), 7):
+            temp_data = bin_data[i:i + 7]
+            decimal_data =FileManager.BinaryToDecimal(temp_data)
+            str_data = str_data + chr(decimal_data)
+        return str_data
+
     def getScore():
-        risBin = FileManager.getToFile()
+        risBin = FileManager.getToFile("data")
         if risBin=="non esiste":
             return 0.0
         risFloat = FileManager.bin_to_float(risBin)
         return float(risFloat)
 
     def writeTO(end, start, file):
-        print("1a")
         path="Watch-Out/src/main/python/data/"+file+".bin"
         f = open(path, "wb")
         if isfloat(end):
-            print("tsa")
             resString = round(end-start, 2)
             byteResult = FileManager.float_to_bin(resString)
             f.write(bytearray(byteResult, "utf8"))
