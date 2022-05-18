@@ -214,11 +214,9 @@ def play():
         time.sleep(0.2)
 
     setEnemy()
-    image = pygame.image.load(
-        "Watch-Out/src/main/python/assets/Background/Quit Rect.png")
+    image = pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
     image = pygame.transform.scale(image, (50, 20))
-    EXIT = Button(image, pos=(90, 50), text_input="MENU", font=get_font(
-        10), base_color="#d7fcd4", hovering_color="White")
+    EXIT = Button(image, pos=(90, 50), text_input="MENU", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
     OWN_PG = pygame.Rect((WIDTH//2)-50, HEIGHT-240, 70, 70)
     ENEMY_PG = pygame.Rect((WIDTH//2)-50, HEIGHT/2-200, 70, 70)
     timer = Thread(target=firetimer, args=())
@@ -302,17 +300,13 @@ def main_menu():
         WatchOutImage=pygame.transform.scale(WatchOutImage, (900, 300))
         WATCH_OUT = get_font(70).render("WATCH OUT!", True, "#db3412")
         TITLE_RECT = WATCH_OUT.get_rect(center=(640, 150))
-        Playimage=pygame.image.load("Watch-Out/src/main/python/assets/Background/PlayButton.png")
-        image=pygame.transform.scale(Playimage, (540, 290))
-        PLAY_BUTTON = Button(image, pos=(640, 300), text_input="PLAY", font=get_font(50), base_color=W, hovering_color="#ddffd0")
-        minImage = pygame.image.load("Watch-Out/src/main/python/assets/Background/Options Rect.png")
-        minImage = pygame.transform.scale(minImage, (400, 90))
-        CHANGE_DIFFICULT = Button(minImage, pos=(400, 440), text_input="SET EASY", font=get_font(
-            30), base_color=W, hovering_color="#ddffd0")
-        SELECT_LEVEL = Button(minImage, pos=(880, 440), text_input="SELECT LEVEL", font=get_font(
-            30), base_color=W, hovering_color="#ddffd0")
-        QUIT_BUTTON = Button(minImage, pos=(640, 560), text_input="QUIT", font=get_font(
-            45), base_color=W, hovering_color="#ddffd0")
+        image=pygame.image.load("Watch-Out/src/main/python/assets/Background/PlayButton.png")
+        image=pygame.transform.scale(image, size=(360, 130))
+        PLAY_BUTTON = Button(image, pos=(630, 310), text_input="PLAY", font=get_font(50), base_color=W, hovering_color="#ddffd0")
+        image = pygame.transform.scale(image, (350, 110))
+        CHANGE_DIFFICULT = Button(image, pos=(400, 440), text_input="SET EASY", font=get_font(25), base_color=W, hovering_color="#ddffd0")
+        SELECT_LEVEL = Button(image, pos=(880, 440), text_input="SELECT LEVEL", font=get_font(25), base_color=W, hovering_color="#ddffd0")
+        QUIT_BUTTON = Button(image, pos=(640, 560), text_input="QUIT", font=get_font(45), base_color=W, hovering_color="#ddffd0")
 
         WIN.blit(score1, (900, 270))
         WIN.blit(scoreStr, (1020, 305))
@@ -330,6 +324,9 @@ def main_menu():
             SELECT_LEVEL.changeColorArrow(pos, 2)
             QUIT_BUTTON.changeColorArrow(pos, 3)
             PLAY_BUTTON.mouseOver(MENU_MOUSE_POS)
+            #SELECT_LEVEL.mouseOver(MENU_MOUSE_POS)
+            #CHANGE_DIFFICULT.mouseOver(MENU_MOUSE_POS)
+            #QUIT_BUTTON.mouseOver(MENU_MOUSE_POS)
             button.update(WIN)
 
         key_input = pygame.key.get_pressed()

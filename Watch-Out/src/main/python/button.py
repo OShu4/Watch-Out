@@ -15,6 +15,9 @@ class Button():
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
         self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
+    def get_font(size):
+        return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
+
     def update(self, screen):
         if self.image is not None:
             screen.blit(self.image, self.rect)
@@ -31,8 +34,8 @@ class Button():
         else:
             self.text = self.font.render(self.text_input, True, self.hovering_color)
 
-    def changeColorArrow(self, numer, i):
-        if numer == i:
+    def changeColorArrow(self, number, i):
+        if number == i:
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render( self.text_input, True, self.base_color)
@@ -42,7 +45,10 @@ class Button():
 
     def mouseOver (self, position):
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-             self.image=pygame.transform.scale(self.image, (560, 305))
-             self.text_input
+            self.image=pygame.transform.scale(self.image, (360, 140))
+            self.font=Button.get_font(55)
+            self.text = self.font.render(self.text_input, True, self.base_color)
         else:
-            self.image=pygame.transform.scale(self.image, (540, 290))
+            self.image=pygame.transform.scale(self.image, (350, 130))
+            self.font=Button.get_font(50)
+            self.text = self.font.render(self.text_input, True, self.base_color)
