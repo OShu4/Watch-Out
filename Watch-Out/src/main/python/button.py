@@ -1,5 +1,5 @@
 G = (0, 255, 0)
-
+import pygame
 
 class Button():
     def __init__(self, image, pos, text_input, font, base_color, hovering_color):
@@ -40,4 +40,9 @@ class Button():
     def setButton(self, position):
         self.changeColorArrow(position, 0)
 
-
+    def mouseOver (self, position):
+        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+             self.image=pygame.transform.scale(self.image, (560, 305))
+             self.text_input
+        else:
+            self.image=pygame.transform.scale(self.image, (540, 290))
