@@ -15,7 +15,7 @@ pygame.init()
 WIDTH, HEIGHT = 1290, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 BG = pygame.image.load("Watch-Out/src/main/python/assets/Background/Background.png")
-
+BG= pygame.transform.scale(BG, (1290, 720))
 def get_font(size):
     return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
@@ -84,6 +84,9 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOU
 
     global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER, PG_HP
     WIN.fill(W)
+    backImage=pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/gameBack.png"))
+    backImage=pygame.transform.scale(backImage,(1290, 720))
+    WIN.blit(backImage, (0,0))
     WIN.blit(OWN_PG_img, (OWN_PG.x, OWN_PG.y))
     WIN.blit(ENEMY_PG_img, (ENEMY_PG.x, ENEMY_PG.y))
 
@@ -160,7 +163,7 @@ def ENEMY_FIRE(i, ENEMY_PG):
     if ENEMY_NUMBER == "0":
         return
     if EASY_DIFF:
-        time.sleep(0.33)
+        time.sleep(0.38 )
     else:
         time.sleep(LEVELDIFF[int(ENEMY_NUMBER)])
     if CANFIRE and not FIRED and not isMENU:
@@ -328,13 +331,9 @@ def main_menu():
                 CHANGE_DIFFICULT.base_color = G
                 CHANGE_DIFFICULT.hovering_color = "#95c799"
             button.mouseOver(MENU_MOUSE_POS,SIZE[i][0],SIZE[i][1])
+            button.changeColorArrow(pos, i)
             button.update(WIN)
             i+=1
-
-        PLAY_BUTTON.changeColorArrow(pos, 0)
-        CHANGE_DIFFICULT.changeColorArrow(pos, 1)
-        SELECT_LEVEL.changeColorArrow(pos, 2)
-        QUIT_BUTTON.changeColorArrow(pos, 3)
 
         key_input = pygame.key.get_pressed()
         for event in pygame.event.get():
