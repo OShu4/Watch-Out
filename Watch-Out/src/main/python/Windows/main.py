@@ -328,13 +328,14 @@ def set_level():
             pygame.display.update()
 
 def checkForSelect():
-    if FileManager.bin_to_str("fin")!=" completed":
+    if FileManager.bin_to_str("fin")==c" completed":
+        set_level()
+    else:
         draw_text = get_font(30).render("Devi prima completare il gioco!", 1, R,"#ddffd0")
         WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /2, (HEIGHT/2 - draw_text.get_height()/2)+15))
         pygame.display.update()
         pygame.time.delay(400)
-    else:
-        set_level()
+    return
 
 def main_menu():
     PlaySize=370, 130
@@ -386,15 +387,16 @@ def main_menu():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    play("0")
-                if CHANGE_DIFFICULT.checkForInput(MENU_MOUSE_POS):
-                    change_difficult()
-                if SELECT_LEVEL.checkForInput(MENU_MOUSE_POS):
-                    checkForSelect()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
+                elif PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    play("0")
+                elif CHANGE_DIFFICULT.checkForInput(MENU_MOUSE_POS):
+                    change_difficult()
+                elif SELECT_LEVEL.checkForInput(MENU_MOUSE_POS):
+                    checkForSelect()
+               
 
             if pygame.KEYDOWN:
                 if key_input[pygame.K_UP]:
@@ -410,9 +412,9 @@ def main_menu():
                 if key_input[pygame.K_SPACE]:
                     if pos == 0:
                         play("0")
-                    if pos == 1:
+                    elif pos == 1:
                         change_difficult()
-                    if pos == 2:
+                    elif pos == 2:
                         checkForSelect()
                     else:
                         pygame.quit()
