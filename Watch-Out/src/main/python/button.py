@@ -46,7 +46,6 @@ class Button():
         self.changeColorArrow(position, 0)
 
     def mouseOver (self, position, size, f):
-        print(Button.getOver(self))
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
             self.image=pygame.transform.scale(self.image, (int(size[0]*1.05), int(size[1]*1.05)))
             self.font=Button.get_font(int(f*1.15))

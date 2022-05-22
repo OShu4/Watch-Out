@@ -28,7 +28,7 @@ OWN_PG_img = pygame.image.load(os.path.join(
     "Watch-Out/src/main/python/assets/Prot/prot.gif"))
 OWN_PG_img = pygame.transform.scale(OWN_PG_img, (OWN_PG_W, OWN_PG_H))
 HP_img = pygame.image.load(os.path.join(
-    "Watch-Out/src/main/python/assets/Background/hp.jpg"))
+    "Watch-Out/src/main/python/assets/Background/hp.png"))
 HP_img = pygame.transform.scale(HP_img, (30, 25))
 OWN_bullets, ENEMY_bullets = NULL, NULL
 CANFIRE, FIRED, DIE, isMENU, LOSE, BESTSCORE, EASY_DIFF = False, False, False, True, NULL, 0.0, False
@@ -123,6 +123,7 @@ def changeLevel():
                           2, HEIGHT/2 - draw_text1.get_height()/2))
     pygame.display.update()
     pygame.time.delay(700)
+    pygame.event.clear()
     return
 
 
@@ -139,7 +140,8 @@ def draw_winner(text, go, color):
         main_menu()
     if not (ENEMY_NUMBER == "5" or PG_HP == 0):
         changeLevel()
-    play()
+    pygame.event.clear()
+    play(ENEMY_NUMBER)
 
 
 def firetimer():
@@ -197,11 +199,13 @@ def toMenu():
     return
 
 
-def play():
+def play(N):
 
     global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER, isMENU, LOSE, PG_HP
+    ENEMY_NUMBER=N
     if isMENU:
-        ENEMY_NUMBER, isMENU, PG_HP = "0", False, 5
+        isMENU, PG_HP = False, 5
+        changeLevel()
 
     if ENEMY_NUMBER == "5":
         isMENU = True
@@ -210,8 +214,7 @@ def play():
             FileManager.writeTO(fin, 0, "fin")
         draw_winner("GAME OVER!", False, G)
     
-    if(ENEMY_NUMBER == "0"):
-        changeLevel()
+
 
     while(DIE == True):
         time.sleep(0.2)
@@ -254,15 +257,18 @@ def play():
                 check_fire(OWN_PG)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-
+    
                 if EXIT.checkForInput(MENU_MOUSE_POS):
                     toMenu()
                 if event.button == 1 and OWN_bullets == NULL:
                     check_fire(OWN_PG)
 
+            pygame.event.clear()
+
         OWN_handle_bullet(ENEMY_PG)
         ENEMY_handle_bullet(OWN_PG)
         background_window(OWN_PG_img, OWN_PG, ENEMY_PG,ENEMY_PG_img, EXIT, MENU_MOUSE_POS)
+
 
 
 def change_difficult():
@@ -274,24 +280,61 @@ def change_difficult():
     return
 
 def set_level():
+
     CurrentLevel=0
+    BackGroundSetLevel=pygame.image.load("Watch-Out/src/main/python/assets/Background/levelSet.png")
+    arrowImageUp=pygame.image.load("Watch-Out/src/main/python/assets/Background/Arrow.png")
+    image=pygame.image.load("Watch-Out/src/main/python/assets/Background/PlayButton.png")
+    image=pygame.transform.scale(image, (300, 100))
+    BackGroundSetLevel=pygame.transform.scale(BackGroundSetLevel, (700, 430))     
+    arrowImageUp=pygame.transform.scale(arrowImageUp, (150,80))
+    arrowImageDown=pygame.transform.rotate(arrowImageUp, 180)
+    arrowImageDown=pygame.transform.scale(arrowImageDown, (150,80))
+
+    PLAY_BUTTON = Button(image, pos=(640, 560), text_input="PLAY", font=get_font(30), base_color=W, hovering_color="#ddffd0")
+    ButtonLevelUp = Button(arrowImageUp, pos= (WIDTH/2+160, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0") 
+    ButtonLevelDown = Button(arrowImageDown, pos= (WIDTH/2-158, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0") 
+
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
         WIN.fill("white")
-        BackGroundSetLevel=pygame.image.load("Watch-Out/src/main/python/assets/Background/levelSet.png")
-        arrowImageUp=pygame.image.load("Watch-Out/src/main/python/assets/Background/ArrowRight.jpg")
-
-        BackGroundSetLevel=pygame.transform.scale(BackGroundSetLevel, (700, 450))     
-        arrowImageUp=pygame.transform.scale(arrowImageUp, (100,60))
-        arrowImageDown=pygame.transform.rotate(arrowImageUp, 180)
-        arrowImageDown=pygame.transform.scale(arrowImageDown, (100,60))
-
-        ButtonLevelUp = Button(arrowImageUp, pos= (WIDTH/2-290-300, HEIGHT/2-250), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0") 
-        ButtonLevelDown = Button(arrowImageDown, pos= (WIDTH/2-290, HEIGHT/2-250), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0") 
-        WIN.blit(BackGroundSetLevel, (WIDTH/2-340, HEIGHT/2-250))
-        for button in [ButtonLevelUp, ButtonLevelDown]:
+        levelText = get_font(22).render(("LEVEL  "+ str(CurrentLevel)), 1,"#57a3f2")
+        for button in [ButtonLevelUp, ButtonLevelDown, PLAY_BUTTON]:
             button.update(WIN)
+
+        WIN.blit(BackGroundSetLevel, (WIDTH/2-340, HEIGHT/2-250))
+        WIN.blit(levelText, (WIDTH/2-70, HEIGHT/2-100))
+        key_input = pygame.key.get_pressed()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BUTTON.checkForInput(OPTIONS_MOUSE_POS):
+                    play(str(CurrentLevel))
+                elif ButtonLevelUp.checkForInput(OPTIONS_MOUSE_POS):
+                    if(CurrentLevel!=4):
+                        CurrentLevel+=1
+                elif ButtonLevelDown.checkForInput(OPTIONS_MOUSE_POS):
+                    if(CurrentLevel!=0):
+                        CurrentLevel-=1
+
+
+            if pygame.KEYDOWN:
+                if key_input[pygame.K_ESCAPE]:
+                    main_menu()
+
+            pygame.display.update()
+
+def checkForSelect():
+    if FileManager.bin_to_str("fin")!=" completed":
+        draw_text = get_font(30).render("Devi prima completare il gioco!", 1, R,"#ddffd0")
+        WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /2, (HEIGHT/2 - draw_text.get_height()/2)+15))
         pygame.display.update()
+        pygame.time.delay(400)
+    else:
+        set_level()
 
 def main_menu():
     PlaySize=370, 130
@@ -319,12 +362,14 @@ def main_menu():
         CHANGE_DIFFICULT = Button(image, pos=(400, 440), text_input="SET EASY", font=get_font(25), base_color=W, hovering_color="#ddffd0")
         SELECT_LEVEL = Button(image, pos=(870, 440), text_input="SELECT LEVEL", font=get_font(25), base_color=W, hovering_color="#ddffd0")
         QUIT_BUTTON = Button(image, pos=(640, 560), text_input="QUIT", font=get_font(45), base_color=W, hovering_color="#ddffd0")
+
         WIN.blit(score1, (900, 270))
         WIN.blit(scoreStr, (1020, 305))
         WIN.blit(MENU_TEXT, MENU_RECT)
         WIN.blit(WatchOutImage,(180, -55))
         WIN.blit(WATCH_OUT, TITLE_RECT)
         SIZE= (PlaySize, 50),(OptionSize, 25),(OptionSize, 25),(OptionSize, 45)
+
         i=0
         for button in [PLAY_BUTTON, CHANGE_DIFFICULT,SELECT_LEVEL, QUIT_BUTTON]:
             if EASY_DIFF:
@@ -342,44 +387,37 @@ def main_menu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    play()
+                    play("0")
                 if CHANGE_DIFFICULT.checkForInput(MENU_MOUSE_POS):
                     change_difficult()
                 if SELECT_LEVEL.checkForInput(MENU_MOUSE_POS):
-                    if FileManager.bin_to_str("fin")!=" completed":
-                        draw_text = get_font(20).render("Devi prima completare il gioco!", 1, R)
-                        WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
-                             2, (HEIGHT/2 - draw_text.get_height()/2)+15))
-                        pygame.display.update()
-                        pygame.time.delay(400)
-                    else:
-                        set_level()
-
+                    checkForSelect()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
 
-            if key_input[pygame.K_UP]:
-                if pos == 0:
-                    pos = 3
-                else:
-                    pos -= 1
-            if key_input[pygame.K_DOWN]:
-                if pos == 3:
-                    pos = 0
-                else:
-                    pos += 1
-            if key_input[pygame.K_SPACE]:
-                print("west ")
-                if pos == 0:
-                    play()
-                if pos == 1:
-                    change_difficult()
-                if pos == 2:
-                    set_level()
-                if pos == 3:
-                    pygame.quit()
-                    sys.exit()
+            if pygame.KEYDOWN:
+                if key_input[pygame.K_UP]:
+                    if pos == 0:
+                        pos = 3
+                    else:
+                        pos -= 1
+                if key_input[pygame.K_DOWN]:
+                    if pos == 3:
+                        pos = 0
+                    else:
+                        pos += 1
+                if key_input[pygame.K_SPACE]:
+                    if pos == 0:
+                        play("0")
+                    if pos == 1:
+                        change_difficult()
+                    if pos == 2:
+                        checkForSelect()
+                    else:
+                        pygame.quit()
+                        sys.exit()
+            pygame.event.clear()
 
         pygame.display.update()
 

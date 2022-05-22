@@ -33,7 +33,10 @@ class FileManager():
         return '{:064b}'.format(d)
 
     def bin_to_str(file):
-        bin_data=(FileManager.getToFile(file).decode('ascii')).replace(" ", "")
+        bin_data=FileManager.getToFile(file)
+        if bin_data=="non esiste":
+            return 
+        bin_data=(bin_data.decode('ascii')).replace(" ", "")
         str_data =' '
         for i in range(0, len(bin_data), 7):
             temp_data = bin_data[i:i + 7]
