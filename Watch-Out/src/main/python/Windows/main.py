@@ -12,31 +12,39 @@ from fileManager import FileManager
 pygame.font.init()
 pygame.mixer.init()
 pygame.init()
+
 WIDTH, HEIGHT = 1290, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT)) 
 pygame.display.set_caption('Watch-Out!')
 programIcon = pygame.image.load('Watch-Out/src/main/python/assets/Logo/applogo.png')
 pygame.display.set_icon(programIcon)
 
-def get_font(size):
-    return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
-
 W, B, R, G, LIGHT_G = (255, 255, 255), (0, 0, 0), (255,0, 0), (0, 255, 0), (184, 218, 186)
 FPS = 90
 OWN_PG_H, OWN_PG_W, BULLET_VEL = 90, 80, 8
-ENEMY_NUMBER = "0"
-ENEMY_PG_img = pygame.image
-OWN_PG_img = pygame.image.load(os.path.join(
-    "Watch-Out/src/main/python/assets/Prot/prot.gif"))
-OWN_PG_img = pygame.transform.scale(OWN_PG_img, (OWN_PG_W, OWN_PG_H))
-HP_img = pygame.image.load(os.path.join(
-    "Watch-Out/src/main/python/assets/Background/hp.png"))
-HP_img = pygame.transform.scale(HP_img, (30, 25))
-OWN_bullets, ENEMY_bullets = NULL, NULL
+LEVELDIFF = [0, 0.3, 0.27, 0.26, 0.23]
 CANFIRE, FIRED, DIE, isMENU, LOSE, BESTSCORE, EASY_DIFF, Return = False, False, False, True, NULL, 0.0, False, False
 PG_HP = 5
-LEVELDIFF = [0, 0.3, 0.27, 0.26, 0.23]
+PlaySize=370, 130
+OptionSize=360,115
 
+ENEMY_NUMBER = "0"
+ENEMY_PG_img = pygame.image
+OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/prot.gif"))
+OWN_PG_img = pygame.transform.scale(OWN_PG_img, (OWN_PG_W, OWN_PG_H))
+HP_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/hp.png"))
+HP_img = pygame.transform.scale(HP_img, (30, 25))
+OWN_bullets, ENEMY_bullets = NULL, NULL
+
+
+image=pygame.image.load("Watch-Out/src/main/python/assets/Background/PlayButton.png")
+Playimage=pygame.transform.scale(image, PlaySize)
+overImageP=pygame.transform.scale(Playimage, (int(PlaySize[0]*1.05), int(PlaySize[1]*1.05)))
+overImageO=pygame.transform.scale(Playimage, (int(OptionSize[0]*1.05), int(OptionSize[1]*1.05)))
+imageOption = pygame.transform.scale(Playimage, OptionSize)
+
+def get_font(size):
+    return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
 def setEnemy():
     global ENEMY_PG_img
@@ -139,6 +147,7 @@ def draw_winner(text, go, color):
     pygame.display.update()
     pygame.time.delay(800)
     if not go or Return:
+        Return=False
         main_menu()
     if not (ENEMY_NUMBER == "5" or PG_HP == 0):
         changeLevel()
@@ -213,6 +222,7 @@ def play(N):
 
     if ENEMY_NUMBER == "5":
         isMENU = True
+        Return=False
         if not EASY_DIFF:
             fin = ' '.join(format(ord(x), 'b') for x in "completed")
             FileManager.writeTO(fin, 0, "fin")
@@ -226,7 +236,7 @@ def play(N):
     setEnemy()
     image = pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
     image = pygame.transform.scale(image, (50, 20))
-    EXIT = Button(image, pos=(90, 50), text_input="MENU", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+    EXIT = Button(image, pos=(90, 50), text_input="MENU", font=get_font(10), base_color="#d7fcd4", hovering_color="White", overImage=image)
     OWN_PG = pygame.Rect((WIDTH//2)-50, HEIGHT-240, 70, 70)
     ENEMY_PG = pygame.Rect((WIDTH//2)-50, HEIGHT/2-200, 70, 70)
     timer = Thread(target=firetimer, args=())
@@ -284,22 +294,24 @@ def change_difficult():
     return
 
 def set_level():
-
+    global overImageP, overImageO, imageOption
     CurrentLevel=0
+
     BackGround=pygame.image.load("Watch-Out/src/main/python/assets/Background/settingBackground.png")
-    BackGround=pygame.transform.scale(BackGround, (1290, 720))
     BackGroundSetLevel=pygame.image.load("Watch-Out/src/main/python/assets/Background/levelSet.png")
     arrowImageUp=pygame.image.load("Watch-Out/src/main/python/assets/Background/Arrow.png")
-    image=pygame.image.load("Watch-Out/src/main/python/assets/Background/PlayButton.png")
-    image=pygame.transform.scale(image, (300, 100))
+
+    BackGround=pygame.transform.scale(BackGround, (1290, 720))
     BackGroundSetLevel=pygame.transform.scale(BackGroundSetLevel, (700, 430))     
     arrowImageUp=pygame.transform.scale(arrowImageUp, (150,80))
     arrowImageDown=pygame.transform.rotate(arrowImageUp, 180)
     arrowImageDown=pygame.transform.scale(arrowImageDown, (150,80))
+
+    PLAY_BUTTON = Button(imageOption, pos=(640, 560), text_input="PLAY", font=get_font(30), base_color=W, hovering_color="#ddffd0", overImage=overImageP)
+    ButtonLevelUp = Button(arrowImageUp, pos= (WIDTH/2+160, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0",overImage=NULL) 
+    ButtonLevelDown = Button(arrowImageDown, pos= (WIDTH/2-158, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0",overImage=NULL) 
+
     WIN.blit(BackGround, (0,0))
-    PLAY_BUTTON = Button(image, pos=(640, 560), text_input="PLAY", font=get_font(30), base_color=W, hovering_color="#ddffd0")
-    ButtonLevelUp = Button(arrowImageUp, pos= (WIDTH/2+160, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0") 
-    ButtonLevelDown = Button(arrowImageDown, pos= (WIDTH/2-158, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0") 
 
     while True:
         
@@ -343,17 +355,13 @@ def checkForSelect():
     return
 
 def main_menu():
-    PlaySize=370, 130
-    OptionSize=360,115
     pos, count = 0, 0
-    global BESTSCORE, EASY_DIFF
-
+    global BESTSCORE, EASY_DIFF, overImageO, overImageP, imageOption, Playimage
     bg_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/Background.png"))
     bg = pygame.transform.scale(bg_img, (1290, 720))
     WatchOutImage= pygame.image.load("Watch-Out/src/main/python/assets/Background/WatchOutPlace.png")
-    image=pygame.image.load("Watch-Out/src/main/python/assets/Background/PlayButton.png")    
-    image=pygame.transform.scale(image, PlaySize)
-    imageOption = pygame.transform.scale(image, OptionSize)
+    
+
 
     score1 = get_font(20).render("Your best score:", 1, "#cda434")
     BESTSCORE = FileManager.getScore()
@@ -366,17 +374,16 @@ def main_menu():
     WATCH_OUT = get_font(70).render("WATCH OUT!", True, "#db3412")
     TITLE_RECT = WATCH_OUT.get_rect(center=(640, 150))
     
-    PLAY_BUTTON = Button(image, pos=(630, 310), text_input="PLAY", font=get_font(50), base_color=W, hovering_color="#ddffd0")
+    PLAY_BUTTON = Button(Playimage, pos=(630, 310), text_input="PLAY", font=get_font(50), base_color=W, hovering_color="#ddffd0",overImage=overImageP)
+    SELECT_LEVEL = Button(imageOption, pos=(870, 440), text_input="SELECT LEVEL", font=get_font(26), base_color=W, hovering_color="#ddffd0", overImage=overImageO)
 
-    CHANGE_DIFFICULT = Button(imageOption, pos=(400, 440), text_input="SET EASY", font=get_font(26), base_color=W, hovering_color="#ddffd0")
-    SELECT_LEVEL = Button(imageOption, pos=(870, 440), text_input="SELECT LEVEL", font=get_font(26), base_color=W, hovering_color="#ddffd0")
-    QUIT_BUTTON = Button(imageOption, pos=(640, 560), text_input="QUIT", font=get_font(45), base_color=W, hovering_color="#ddffd0")
+    QUIT_BUTTON = Button(imageOption, pos=(640, 560), text_input="QUIT", font=get_font(45), base_color=W, hovering_color="#ddffd0",overImage=overImageO)
 
 
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        CHANGE_DIFFICULT = Button(image, pos=(400, 440), text_input="SET EASY", font=get_font(25), base_color=W, hovering_color="#ddffd0")
-        SIZE= (PlaySize, 50),(OptionSize, 25),(OptionSize, 25),(OptionSize, 45)
+        CHANGE_DIFFICULT = Button(imageOption, pos=(400, 440), text_input="SET EASY", font=get_font(26), base_color=W, hovering_color="#ddffd0",overImage=overImageO)
+        SIZE= [50, 25, 25, 40]
         WIN.blit(bg, (count, 0))
         WIN.blit(bg, (WIDTH+count, 0))
         if count == -WIDTH:
@@ -389,7 +396,7 @@ def main_menu():
             if EASY_DIFF:
                 CHANGE_DIFFICULT.base_color = G
                 CHANGE_DIFFICULT.hovering_color = "#95c799"
-            button.mouseOver(MENU_MOUSE_POS,SIZE[i][0],SIZE[i][1])
+            button.mouseOver(MENU_MOUSE_POS,SIZE[i])
             button.changeColorArrow(pos, i)
             button.update(WIN)
             i+=1
@@ -440,6 +447,7 @@ def main_menu():
                     else:
                         pygame.quit()
                         sys.exit()
+                        
             pygame.event.clear()
 
 main_menu()
