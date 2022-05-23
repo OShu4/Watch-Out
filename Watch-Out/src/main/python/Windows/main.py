@@ -3,11 +3,13 @@ from threading import Thread
 import time
 import os
 from asyncio.windows_events import NULL
+from tkinter import NONE
 import pygame
 import sys
 sys.path.append("Watch-Out/src/main/python")
 from button import Button
 from fileManager import FileManager
+import spritesheet 
 
 pygame.font.init()
 pygame.mixer.init()
@@ -21,17 +23,22 @@ pygame.display.set_icon(programIcon)
 
 W, B, R, G, LIGHT_G = (255, 255, 255), (0, 0, 0), (255,0, 0), (0, 255, 0), (184, 218, 186)
 FPS = 90
-OWN_PG_H, OWN_PG_W, BULLET_VEL = 90, 80, 8
+OWN_PG_H, OWN_PG_W, BULLET_VEL,PG_HP = 90, 80, 8,5
 LEVELDIFF = [0, 0.3, 0.27, 0.26, 0.23]
 CANFIRE, FIRED, DIE, isMENU, LOSE, BESTSCORE, EASY_DIFF, Return = False, False, False, True, NULL, 0.0, False, False
-PG_HP = 5
+lastUpdate=0.0
 PlaySize=370, 130
 OptionSize=360,115
 
 ENEMY_NUMBER = "0"
 ENEMY_PG_img = pygame.image
-OWN_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Prot/prot.gif"))
-OWN_PG_img = pygame.transform.scale(OWN_PG_img, (OWN_PG_W, OWN_PG_H))
+OWN_PG_img = pygame.image.load("Watch-Out/src/main/python/assets/Prot/prot1.png").convert_alpha()
+OWN_PG_img = spritesheet.SpriteSheet(OWN_PG_img)
+
+animationList=[]
+for x in range (2):
+    animationList.append(OWN_PG_img.get_image(x, 73, 90, 3, W))
+
 HP_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/hp.png"))
 HP_img = pygame.transform.scale(HP_img, (30, 25))
 OWN_bullets, ENEMY_bullets = NULL, NULL
@@ -54,9 +61,9 @@ def setEnemy():
 
 
 def timer():
-    global FIRED, isMENU, LOSE
+    global FIRED, isMENU, LOSE, DIE
     start = time.time()
-    while True:
+    while not isMENU:
         if isMENU or LOSE:
             return
         if FIRED and not LOSE:
@@ -89,15 +96,30 @@ def ENEMY_handle_bullet(OWN_PG):
             draw_winner("hai perso!", True, R)
     return
 
+def animation(OWN_PG):
+    global OWN_PG_img, animationList,lastUpdate
 
-def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOUSE_POS):
+    animationCooldown=320
+    frameN=0
+    currentTime = pygame.time.get_ticks()
+    if currentTime-lastUpdate >= animationCooldown:
+        frameN+=1
+        lastUpdate=currentTime
+        if frameN >= len(animationList):
+            frameN=0
+    frame=pygame.transform.scale(animationList[frameN], (70, 90))
+    WIN.blit(frame, (OWN_PG.x, OWN_PG.y))
+    return
+
+
+def background_window(OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOUSE_POS):
 
     global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER, PG_HP
     WIN.fill(W)
     backImage=pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/gameBack.png"))
     backImage=pygame.transform.scale(backImage,(1290, 720))
     WIN.blit(backImage, (0,0))
-    WIN.blit(OWN_PG_img, (OWN_PG.x, OWN_PG.y))
+    animation(OWN_PG)
     WIN.blit(ENEMY_PG_img, (ENEMY_PG.x, ENEMY_PG.y))
 
     draw_text = get_font(15).render(str(PG_HP), 1, B)
@@ -122,6 +144,7 @@ def background_window(OWN_PG_img, OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOU
     EXIT.update(WIN)
 
     pygame.display.update()
+    return
 
 
 def changeLevel():
@@ -162,6 +185,7 @@ def firetimer():
     T = random.uniform(1.5, 3)
     time.sleep(T)
     CANFIRE = True
+
     Scoretimer = Thread(target=timer, args=())
     Scoretimer.start()
     DIE = False
@@ -169,20 +193,19 @@ def firetimer():
 
 
 def ENEMY_FIRE(i, ENEMY_PG):
-    global ENEMY_bullets, CANFIRE, FIRED, LEVELDIFF, ENEMY_NUMBER, LOSE, isMENU, EASY_DIFF
-    while CANFIRE == False:
+    global ENEMY_bullets, CANFIRE, FIRED, LEVELDIFF, ENEMY_NUMBER, LOSE, isMENU, EASY_DIFF, DIE
+    while CANFIRE == False and not isMENU:
         pass
-
     if ENEMY_NUMBER == "0":
         return
     if EASY_DIFF:
         time.sleep(0.38 )
     else:
         time.sleep(LEVELDIFF[int(ENEMY_NUMBER)])
-    if CANFIRE and not FIRED and not isMENU:
-        LOSE = True
-        ENEMY_bullets = pygame.Rect(ENEMY_PG.x + OWN_PG_H//2 - 5, ENEMY_PG.y + 40, 10, 5)
-        FIRED = True
+        if CANFIRE and not FIRED and not isMENU:
+            LOSE = True
+            ENEMY_bullets = pygame.Rect(ENEMY_PG.x + OWN_PG_H//2 - 5, ENEMY_PG.y + 40, 10, 5)
+            FIRED = True
     return
 
 
@@ -212,7 +235,7 @@ def toMenu():
 
 def play(N):
 
-    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER, isMENU, LOSE, PG_HP, Return
+    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER, isMENU, LOSE, PG_HP, Return, lastUpdate
     ENEMY_NUMBER=N
     if isMENU:
         isMENU, PG_HP, Return = False, 5, False
@@ -247,7 +270,7 @@ def play(N):
     ENEMYT.start()
     timer.start()
 
-
+    lastUpdate=pygame.time.get_ticks()
     while True:
 
         clock.tick(FPS)
@@ -261,6 +284,7 @@ def play(N):
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
+                isMENU = True
                 pygame.quit()
                 sys.exit()
 
@@ -281,7 +305,7 @@ def play(N):
 
         OWN_handle_bullet(ENEMY_PG)
         ENEMY_handle_bullet(OWN_PG)
-        background_window(OWN_PG_img, OWN_PG, ENEMY_PG,ENEMY_PG_img, EXIT, MENU_MOUSE_POS)
+        background_window(OWN_PG, ENEMY_PG,ENEMY_PG_img, EXIT, MENU_MOUSE_POS)
 
 
 
