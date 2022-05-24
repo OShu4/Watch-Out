@@ -72,3 +72,7 @@ Gli sprite, o pixel-art del gioco sono stati disegnati attraverso il software Pi
 ### Gallo Valerio
 - gallo.valerio@istitutomontani.edu.it
 - Git <a href="https://github.com/Vallozz">Vallozz </a>
+
+### Adriano Pesaresi
+- pesaresi.adriano@istitutomontani.edu.it
+- Git <a href="https://github.com/adrianopesaresi">adrianopesaresi </a>
