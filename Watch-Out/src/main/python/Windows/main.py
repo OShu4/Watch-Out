@@ -3,7 +3,6 @@ from threading import Thread
 import time
 import os
 from asyncio.windows_events import NULL
-from tkinter import NONE
 import pygame
 import sys
 sys.path.append("Watch-Out/src/main/python")
@@ -15,13 +14,15 @@ pygame.font.init()
 pygame.mixer.init()
 pygame.init()
 
+#inizializzazione della finestra di gioco. Altezza e largezza; logo e nome della finestra.
 WIDTH, HEIGHT = 1290, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT)) 
 pygame.display.set_caption('Watch-Out!')
 programIcon = pygame.image.load('Watch-Out/src/main/python/assets/Logo/applogo.png')
 pygame.display.set_icon(programIcon)
 
-W, B, R, G, LIGHT_G = (255, 255, 255), (0, 0, 0), (255,0, 0), (0, 255, 0), (184, 218, 186)
+#definizione delle variabili globali. Colori, FPS, tempo di reazione dei nemici, statistiche dei personaggi, bool di controllo, etc.
+W, B, R, G, LIGHT_G= (255, 255, 255), (0, 0, 0), (255,0, 0), (0, 255, 0), (184, 218, 186)
 FPS = 90
 OWN_PG_H, OWN_PG_W, BULLET_VEL,PG_HP = 90, 80, 8,5
 LEVELDIFF = [0, 0.3, 0.27, 0.26, 0.23]
@@ -30,26 +31,28 @@ lastUpdate=0.0
 PlaySize=370, 130
 OptionSize=360,115
 
+#inizializzazione dei PG.
 ENEMY_NUMBER = "0"
 ENEMY_PG_img = pygame.image
 OWN_PG_img = pygame.image.load("Watch-Out/src/main/python/assets/Prot/prot1.png").convert_alpha()
 OWN_PG_img = spritesheet.SpriteSheet(OWN_PG_img)
 
+#separazione delle sprite dal PNG
 animationList=[]
 for x in range (2):
-    animationList.append(OWN_PG_img.get_image(x, 73, 90, 3, W))
+    animationList.append(OWN_PG_img.get_image(x, 73, 90, 3, ((255,255,255,0))))
 
+#oggetti e instanze utili
 HP_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/hp.png"))
 HP_img = pygame.transform.scale(HP_img, (30, 25))
 OWN_bullets, ENEMY_bullets = NULL, NULL
-
-
 image=pygame.image.load("Watch-Out/src/main/python/assets/Background/PlayButton.png")
 Playimage=pygame.transform.scale(image, PlaySize)
 overImageP=pygame.transform.scale(Playimage, (int(PlaySize[0]*1.05), int(PlaySize[1]*1.05)))
 overImageO=pygame.transform.scale(Playimage, (int(OptionSize[0]*1.05), int(OptionSize[1]*1.05)))
 imageOption = pygame.transform.scale(Playimage, OptionSize)
 
+#richiamata restituisce un font
 def get_font(size):
     return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
@@ -59,7 +62,7 @@ def setEnemy():
     ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy.gif"))
     ENEMY_PG_img = pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W, OWN_PG_H))
 
-
+#conta il tempo di reazione che il player impiega nel cliccare dal via. se il tempo batte il record viene scritto nel file data.bin
 def timer():
     global FIRED, isMENU, LOSE, DIE
     start = time.time()
@@ -72,7 +75,7 @@ def timer():
                 FileManager.writeTO(float(end), start, "data")
             return
 
-
+#gestisce i proiettili del giocatore e la collisione con il nemico
 def OWN_handle_bullet(ENEMY_PG):
     global OWN_bullets, ENEMY_NUMBER
 
@@ -84,7 +87,7 @@ def OWN_handle_bullet(ENEMY_PG):
             draw_winner("hai vinto!", True, G)
     return
 
-
+#gestisce i proiettili del NPC e la collisione con il giocatore
 def ENEMY_handle_bullet(OWN_PG):
     global ENEMY_bullets, PG_HP
 
@@ -96,10 +99,11 @@ def ENEMY_handle_bullet(OWN_PG):
             draw_winner("hai perso!", True, R)
     return
 
+#crea l'animazione dei vari PG alternando i frame
 def animation(OWN_PG):
     global OWN_PG_img, animationList,lastUpdate
 
-    animationCooldown=320
+    animationCooldown=370
     frameN=0
     currentTime = pygame.time.get_ticks()
     if currentTime-lastUpdate >= animationCooldown:
@@ -111,7 +115,7 @@ def animation(OWN_PG):
     WIN.blit(frame, (OWN_PG.x, OWN_PG.y))
     return
 
-
+#si occupa di disegnare la finestra di gioco durante play
 def background_window(OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOUSE_POS):
 
     global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER, PG_HP
@@ -146,7 +150,7 @@ def background_window(OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOUSE_POS):
     pygame.display.update()
     return
 
-
+#fa la transizione di cambio livello
 def changeLevel():
     global WIDTH, HEIGHT, ENEMY_NUMBER
 
@@ -159,7 +163,7 @@ def changeLevel():
     pygame.event.clear()
     return
 
-
+#scrive il vincitore e, a seconda dei casi, riporta a play o a main_menu
 def draw_winner(text, go, color):
     global ENEMY_NUMBER, PG_HP, Return
 
@@ -177,7 +181,7 @@ def draw_winner(text, go, color):
     pygame.event.clear()
     play(ENEMY_NUMBER)
 
-
+#dorme un tempo casuale e poi da il via libera al fuoco con "WATCH OUT", se il giocatore spara prima perde
 def firetimer():
     global CANFIRE, DIE
 
@@ -308,7 +312,6 @@ def play(N):
         background_window(OWN_PG, ENEMY_PG,ENEMY_PG_img, EXIT, MENU_MOUSE_POS)
 
 
-
 def change_difficult():
     global EASY_DIFF
     if EASY_DIFF:
@@ -317,7 +320,7 @@ def change_difficult():
         EASY_DIFF = True
     return
 
-def set_level():
+def set_level(): 
     global overImageP, overImageO, imageOption
     CurrentLevel=0
 
@@ -331,18 +334,30 @@ def set_level():
     arrowImageDown=pygame.transform.rotate(arrowImageUp, 180)
     arrowImageDown=pygame.transform.scale(arrowImageDown, (150,80))
 
-    PLAY_BUTTON = Button(imageOption, pos=(640, 560), text_input="PLAY", font=get_font(30), base_color=W, hovering_color="#ddffd0", overImage=overImageP)
-    ButtonLevelUp = Button(arrowImageUp, pos= (WIDTH/2+160, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0",overImage=NULL) 
-    ButtonLevelDown = Button(arrowImageDown, pos= (WIDTH/2-158, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0",overImage=NULL) 
+    arrowImageUpOver=pygame.transform.scale(arrowImageUp, (160,85))
+    arrowImageDownOver=pygame.transform.scale(arrowImageDown, (160,85))
+
+    PLAY_BUTTON = Button(imageOption, pos=(640, 560), text_input="PLAY", font=get_font(40), base_color=W, hovering_color="#ddffd0", overImage=overImageP)
+    ButtonLevelUp = Button(arrowImageUp, pos= (WIDTH/2+160, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0",overImage=arrowImageUpOver) 
+    ButtonLevelDown = Button(arrowImageDown, pos= (WIDTH/2-158, HEIGHT/2+100), text_input="", font=get_font(30), base_color=B, hovering_color="#ddffd0",overImage=arrowImageDownOver) 
+
+    image = pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
+    image = pygame.transform.scale(image, (50, 20))
+    EXIT = Button(image, pos=(90, 50), text_input="MENU", font=get_font(10), base_color="#d7fcd4", hovering_color="White", overImage=image)
 
     WIN.blit(BackGround, (0,0))
-
     while True:
-        
+
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+        WIN.blit(BackGround, (0,0))
+
         levelText = get_font(22).render(("LEVEL  "+ str(CurrentLevel)), 1,"#57a3f2")
         for button in [ButtonLevelUp, ButtonLevelDown, PLAY_BUTTON]:
+            button.mouseOver(OPTIONS_MOUSE_POS, 45)
             button.update(WIN)
+
+        EXIT.changeColor(OPTIONS_MOUSE_POS)
+        EXIT.update(WIN)
         WIN.blit(BackGroundSetLevel, (WIDTH/2-340, HEIGHT/2-250))
         WIN.blit(levelText, (WIDTH/2-70, HEIGHT/2-100))
         key_input = pygame.key.get_pressed()
@@ -352,6 +367,9 @@ def set_level():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if EXIT.checkForInput(OPTIONS_MOUSE_POS):
+                    CurrentLevel=0
+                    main_menu()
                 if PLAY_BUTTON.checkForInput(OPTIONS_MOUSE_POS):
                     play(str(CurrentLevel))
                 elif ButtonLevelUp.checkForInput(OPTIONS_MOUSE_POS):
@@ -400,7 +418,6 @@ def main_menu():
     
     PLAY_BUTTON = Button(Playimage, pos=(630, 310), text_input="PLAY", font=get_font(50), base_color=W, hovering_color="#ddffd0",overImage=overImageP)
     SELECT_LEVEL = Button(imageOption, pos=(870, 440), text_input="SELECT LEVEL", font=get_font(26), base_color=W, hovering_color="#ddffd0", overImage=overImageO)
-
     QUIT_BUTTON = Button(imageOption, pos=(640, 560), text_input="QUIT", font=get_font(45), base_color=W, hovering_color="#ddffd0",overImage=overImageO)
 
 
