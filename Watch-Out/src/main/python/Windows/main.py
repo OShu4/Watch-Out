@@ -18,7 +18,7 @@ pygame.init()
 WIDTH, HEIGHT = 1290, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT)) 
 pygame.display.set_caption('Watch-Out!')
-programIcon = pygame.image.load('Watch-Out/src/main/python/assets/Logo/applogo.png')
+programIcon = pygame.image.load('Watch-Out\output\main\applogo.png')
 pygame.display.set_icon(programIcon)
 
 #definizione delle variabili globali. Colori, FPS, tempo di reazione dei nemici, statistiche dei personaggi, bool di controllo, etc.
