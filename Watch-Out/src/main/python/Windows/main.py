@@ -23,24 +23,26 @@ pygame.display.set_icon(programIcon)
 
 #definizione delle variabili globali. Colori, FPS, tempo di reazione dei nemici, statistiche dei personaggi, bool di controllo, etc.
 W, B, R, G, LIGHT_G= (255, 255, 255), (0, 0, 0), (255,0, 0), (0, 255, 0), (184, 218, 186)
-FPS = 90
+FPS = 120
 OWN_PG_H, OWN_PG_W, BULLET_VEL,PG_HP = 90, 80, 8,5
-LEVELDIFF = [0, 0.3, 0.27, 0.26, 0.23]
+ENEMY_PG_W, ENEMY_PG_H= 90, 80
+LEVELDIFF = [0, 0.31, 0.29, 0.28, 0.25]
 CANFIRE, FIRED, DIE, isMENU, LOSE, BESTSCORE, EASY_DIFF, Return = False, False, False, True, NULL, 0.0, False, False
-lastUpdate=0.0
+lastUpdateProt=0.0
+lastUpdateEnemy=0.0
 PlaySize=370, 130
 OptionSize=360,115
 
 #inizializzazione dei PG.
 ENEMY_NUMBER = "0"
 ENEMY_PG_img = pygame.image
-OWN_PG_img = pygame.image.load("Watch-Out/src/main/python/assets/Prot/prot1.png").convert_alpha()
+OWN_PG_img = pygame.image.load("Watch-Out/src/main/python/assets/Prot/prot.png").convert_alpha()
 OWN_PG_img = spritesheet.SpriteSheet(OWN_PG_img)
 
 #separazione delle sprite dal PNG
-animationList=[]
+animationListOwnPg=[]
 for x in range (2):
-    animationList.append(OWN_PG_img.get_image(x, 73, 90, 3, ((255,255,255,0))))
+    animationListOwnPg.append(OWN_PG_img.get_image(x, 24, 27, 3, ((255,255,255,0))))
 
 #oggetti e instanze utili
 HP_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/hp.png"))
@@ -51,16 +53,27 @@ Playimage=pygame.transform.scale(image, PlaySize)
 overImageP=pygame.transform.scale(Playimage, (int(PlaySize[0]*1.05), int(PlaySize[1]*1.05)))
 overImageO=pygame.transform.scale(Playimage, (int(OptionSize[0]*1.05), int(OptionSize[1]*1.05)))
 imageOption = pygame.transform.scale(Playimage, OptionSize)
+animationListEnemy=[]
 
 #richiamata restituisce un font
 def get_font(size):
     return pygame.font.Font("Watch-Out/src/main/python/assets/Font/font.ttf", size)
 
 def setEnemy():
-    global ENEMY_PG_img
-    # ENEMY_PG_img = pygame.image.load(os.path.join("src/main/python/assets/Enemy/enemy"+ENEMY_NUMBER+".gif"))
-    ENEMY_PG_img = pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Enemy/enemy.gif"))
-    ENEMY_PG_img = pygame.transform.scale(ENEMY_PG_img, (OWN_PG_W, OWN_PG_H))
+    global ENEMY_PG_img, animationListEnemy, ENEMY_NUMBER, ENEMY_PG_W
+    path="Watch-Out/src/main/python/assets/Enemy/Enemy"+ENEMY_NUMBER+".png"
+    ENEMY_PG_img = pygame.image.load(path)
+    ENEMY_PG_img = spritesheet.SpriteSheet(ENEMY_PG_img)
+
+    path="Watch-Out/src/main/python/assets/Enemy/Json/Enemy"+ ENEMY_NUMBER +".json"
+    size=FileManager.JsonReader(path)
+    animationListEnemy.clear()
+    for x in range (2):
+        animationListEnemy.append(ENEMY_PG_img.get_image(x, size[0], size[1], 10, ((255,255,255,0))))
+    
+    ENEMY_PG_W=90
+    if ENEMY_NUMBER =="1":
+        ENEMY_PG_W=130
 
 #conta il tempo di reazione che il player impiega nel cliccare dal via. se il tempo batte il record viene scritto nel file data.bin
 def timer():
@@ -71,8 +84,9 @@ def timer():
             return
         if FIRED and not LOSE:
             end = time.time()
-            if end-start < float(BESTSCORE) or BESTSCORE == 0.0:
-                FileManager.writeTO(float(end), start, "data")
+            reaction=round(end-start, 2)-((end-start)/7)
+            if reaction < float(BESTSCORE) or BESTSCORE == 0.0:
+                FileManager.writeTO(reaction, "data")
             return
 
 #gestisce i proiettili del giocatore e la collisione con il nemico
@@ -100,31 +114,39 @@ def ENEMY_handle_bullet(OWN_PG):
     return
 
 #crea l'animazione dei vari PG alternando i frame
-def animation(OWN_PG):
-    global OWN_PG_img, animationList,lastUpdate
-
+def animation(OWN_PG, ENEMY_PG):
+    global lastUpdateProt, lastUpdateEnemy, animationListOwnPg,animationListEnemy, ENEMY_PG_W
     animationCooldown=370
     frameN=0
     currentTime = pygame.time.get_ticks()
-    if currentTime-lastUpdate >= animationCooldown:
+    
+    if currentTime-lastUpdateProt >= animationCooldown:
         frameN+=1
-        lastUpdate=currentTime
-        if frameN >= len(animationList):
+        lastUpdateProt=currentTime
+        if frameN >= len(animationListOwnPg):
             frameN=0
-    frame=pygame.transform.scale(animationList[frameN], (70, 90))
+    frame=pygame.transform.scale(animationListOwnPg[frameN], (OWN_PG_W, OWN_PG_H))
     WIN.blit(frame, (OWN_PG.x, OWN_PG.y))
+    frame=pygame.transform.scale(animationListEnemy[frameN], (ENEMY_PG_W, ENEMY_PG_H))
+    WIN.blit(frame, (ENEMY_PG.x, ENEMY_PG.y))
     return
 
+
+    
+
 #si occupa di disegnare la finestra di gioco durante play
-def background_window(OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOUSE_POS):
+def background_window(OWN_PG, ENEMY_PG, EXIT, MENU_MOUSE_POS, ):
 
     global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER, PG_HP
+
+    if OWN_bullets:
+        pygame.draw.rect(WIN, B, OWN_bullets)
+
     WIN.fill(W)
     backImage=pygame.image.load(os.path.join("Watch-Out/src/main/python/assets/Background/gameBack.png"))
     backImage=pygame.transform.scale(backImage,(1290, 720))
     WIN.blit(backImage, (0,0))
-    animation(OWN_PG)
-    WIN.blit(ENEMY_PG_img, (ENEMY_PG.x, ENEMY_PG.y))
+    animation(OWN_PG, ENEMY_PG)
 
     draw_text = get_font(15).render(str(PG_HP), 1, B)
     WIN.blit(draw_text, (965, 55))
@@ -134,9 +156,8 @@ def background_window(OWN_PG, ENEMY_PG, ENEMY_PG_img, EXIT, MENU_MOUSE_POS):
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() / 2, 55))
 
     if CANFIRE == True and FIRED == False:
-        draw_text = get_font(100).render("Watch Out!", 1, B)
-        WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
-                             2, HEIGHT/2 - draw_text.get_height()/2))
+        draw_text = get_font(100).render("Watch Out!", 1, "#db3412")
+        WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() / 2, HEIGHT/2 - draw_text.get_height()/2))
                              
     if OWN_bullets:
         pygame.draw.rect(WIN, B, OWN_bullets)
@@ -156,8 +177,7 @@ def changeLevel():
 
     WIN.fill(W)
     draw_text1 = get_font(80).render("LEVEL "+str(ENEMY_NUMBER), 1, B)
-    WIN.blit(draw_text1, (WIDTH/2 - draw_text1.get_width() /
-                          2, HEIGHT/2 - draw_text1.get_height()/2))
+    WIN.blit(draw_text1, (WIDTH/2 - draw_text1.get_width() / 2, HEIGHT/2 - draw_text1.get_height()/2))
     pygame.display.update()
     pygame.time.delay(700)
     pygame.event.clear()
@@ -169,8 +189,7 @@ def draw_winner(text, go, color):
 
     WIN.fill(W)
     draw_text = get_font(100).render(text, 1, color)
-    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
-                         2, HEIGHT/2 - draw_text.get_height()/2))
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() / 2, HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
     pygame.time.delay(800)
     if not go or Return:
@@ -196,7 +215,7 @@ def firetimer():
     return
 
 
-def ENEMY_FIRE(i, ENEMY_PG):
+def ENEMY_FIRE(i,ENEMY_PG):
     global ENEMY_bullets, CANFIRE, FIRED, LEVELDIFF, ENEMY_NUMBER, LOSE, isMENU, EASY_DIFF, DIE
     while CANFIRE == False and not isMENU:
         pass
@@ -216,8 +235,10 @@ def ENEMY_FIRE(i, ENEMY_PG):
 def check_fire(OWN_PG):
     global CANFIRE, FIRED, OWN_bullets, LOSE, PG_HP
     if CANFIRE and not FIRED:
-        OWN_bullets = pygame.Rect(
-            OWN_PG.x + OWN_PG_H//2 - 5, OWN_PG.y + 5, 10, 5)
+        s = 'Watch-Out/src/main/python/assets/Enemy/Music/'
+        ouch = pygame.mixer.Sound(os.path.join(s, 'pistola.wav'))
+        pygame.mixer.Sound.play(ouch)
+        OWN_bullets = pygame.Rect(OWN_PG.x + OWN_PG_H//2 - 5, OWN_PG.y + 5, 10, 5)
         LOSE = False
         FIRED = True
     elif not(CANFIRE and FIRED):
@@ -235,11 +256,11 @@ def toMenu():
         isMENU = True
         main_menu()
     return
-
+                              
 
 def play(N):
 
-    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER, isMENU, LOSE, PG_HP, Return, lastUpdate
+    global OWN_bullets, CANFIRE, FIRED, DIE, ENEMY_NUMBER, isMENU, LOSE, PG_HP, Return, lastUpdateProt, lastUpdateEnemy
     ENEMY_NUMBER=N
     if isMENU:
         isMENU, PG_HP, Return = False, 5, False
@@ -254,27 +275,32 @@ def play(N):
             fin = ' '.join(format(ord(x), 'b') for x in "completed")
             FileManager.writeTO(fin, 0, "fin")
         draw_winner("GAME OVER!", False, G)
-    
-
 
     while(DIE == True):
         time.sleep(0.2)
 
+    
     setEnemy()
     image = pygame.image.load("Watch-Out/src/main/python/assets/Background/Quit Rect.png")
     image = pygame.transform.scale(image, (50, 20))
     EXIT = Button(image, pos=(90, 50), text_input="MENU", font=get_font(10), base_color="#d7fcd4", hovering_color="White", overImage=image)
-    OWN_PG = pygame.Rect((WIDTH//2)-50, HEIGHT-240, 70, 70)
-    ENEMY_PG = pygame.Rect((WIDTH//2)-50, HEIGHT/2-200, 70, 70)
+    OWN_PG = pygame.Rect((WIDTH//2)-50, HEIGHT-110, 70, 70)
+   
+    if ENEMY_NUMBER == "1":
+        ENEMY_PG = pygame.Rect((WIDTH//2)-50, HEIGHT/2+50, 250, 70)
+    else:
+        ENEMY_PG = pygame.Rect((WIDTH//2)-50, HEIGHT/2+50, 70, 70)
+    
     timer = Thread(target=firetimer, args=())
     clock = pygame.time.Clock()
-    ENEMYT = Thread(target=ENEMY_FIRE, args=(1, ENEMY_PG))
+    ENEMYT = Thread(target=ENEMY_FIRE, args=(1,ENEMY_PG))
 
     CANFIRE, FIRED, LOSE = False, False, NULL
     ENEMYT.start()
     timer.start()
 
-    lastUpdate=pygame.time.get_ticks()
+    lastUpdateProt=pygame.time.get_ticks()
+    lastUpdateEnemy=pygame.time.get_ticks()
     while True:
 
         clock.tick(FPS)
@@ -286,7 +312,7 @@ def play(N):
             draw_winner("GAME OVER!", False, R)
 
         for event in pygame.event.get():
-
+            
             if event.type == pygame.QUIT:
                 isMENU = True
                 pygame.quit()
@@ -296,6 +322,7 @@ def play(N):
                 toMenu()
 
             if key_input[pygame.K_SPACE]:
+                print("si")
                 check_fire(OWN_PG)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -309,7 +336,7 @@ def play(N):
 
         OWN_handle_bullet(ENEMY_PG)
         ENEMY_handle_bullet(OWN_PG)
-        background_window(OWN_PG, ENEMY_PG,ENEMY_PG_img, EXIT, MENU_MOUSE_POS)
+        background_window(OWN_PG, ENEMY_PG, EXIT, MENU_MOUSE_POS)
 
 
 def change_difficult():
@@ -378,7 +405,6 @@ def set_level():
                 elif ButtonLevelDown.checkForInput(OPTIONS_MOUSE_POS):
                     if(CurrentLevel!=0):
                         CurrentLevel-=1
-
 
             if pygame.KEYDOWN:
                 if key_input[pygame.K_ESCAPE]:
