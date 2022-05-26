@@ -35,7 +35,7 @@ Inoltre il giocatore, sempre nella schermata di gioco, in alto a destra, trover√
    
 
 ## Classi
-- [-] main.py  
+### - [-] main.py  
 ```python
  while True:
       clock.tick(FPS)
