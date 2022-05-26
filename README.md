@@ -102,15 +102,16 @@ Costruttore di Button che, tra i parametri principali, riceve:
 ### - [-] fileManager.py
 file che gestisce la creazione, la scrittura e la lettura da file.
 ```python
+
     def writeTO(time, file):
-        path="Watch-Out/src/main/python/data/"+file+".bin"
-        f = open(path, "wb")
-        if isfloat(time):
-            byteResult = FileManager.float_to_bin(time)
-            f.write(bytearray(byteResult, "utf8"))
-        else:
-            f.write(bytearray(time, "utf8"))
-        return
+       	 path="Watch-Out/src/main/python/data/"+file+".bin"
+       	 f = open(path, "wb")
+         if isfloat(time):
+              byteResult = FileManager.float_to_bin(time)
+              f.write(bytearray(byteResult, "utf8"))
+         else:
+              f.write(bytearray(time, "utf8"))
+         return
 ```
 Scrittura su *file*. Separa la possibilita in cui il testo in input sia float o string
 
