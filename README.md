@@ -92,21 +92,69 @@ Utilizzata da tutti i bottoni del gioco.
         self.overImage=overImage
 ```
 Costruttore di Button che, tra i parametri principali, riceve:
--image -> l'immagine di sfondo del bottone
--pos -> la posizione nella finestra del bottone
--text_input -> testo sul bottone
--base_color -> colore del testo mentre il bottone non e' overato
--hovering_colot -> colore del testo mentre il bottone e' overato
--overImage -> resize del immagine mentre il bottobe e' overato
+-**image** -> l'immagine di sfondo del bottone
+-**pos** -> la posizione nella finestra del bottone
+-**text_input** -> testo sul bottone
+-**base_color** -> colore del testo mentre il bottone non e' overato
+-**hovering_colot** -> colore del testo mentre il bottone e' overato
+-**verImage** -> resize del immagine mentre il bottobe e' overato
 
 ### - [-] fileManager.py
+file che gestisce la creazione, la scrittura e la lettura da file.
+```python
+    def writeTO(time, file):
+        path="Watch-Out/src/main/python/data/"+file+".bin"
+        f = open(path, "wb")
+        if isfloat(time):
+            byteResult = FileManager.float_to_bin(time)
+            f.write(bytearray(byteResult, "utf8"))
+        else:
+            f.write(bytearray(time, "utf8"))
+        return
+```
+Scrittura su *file*. Separa la possibilita in cui il testo in input sia float o string
+
+```python
+    def getToFile(file):
+        path="Watch-Out/src/main/python/data/"+file+".bin"
+        if not exists(path):
+            return "non esiste"
+        file = open(path, "rb")
+        byte = file.read(1)
+        byteScore = bytes()
+        while byte:
+            byteScore = byteScore + byte
+            byte = file.read(1)
+        return byteScore
+```
+Legge da file binari.
+
+```python
+    def JsonReader(path):
+        with open(path) as f:
+            data = json.load(f)
+
+        w = data["frames"]["images"] ["frame"] ["w"] 
+        h = data["frames"]["images"] ["frame"] ["h"] 
+        size =[w,h] 
+        return size
+```
+Legge da file Json altezza e spessore degli sprite
+
 ### - [-] spritesheet.py
-
-## Codice, Protocolli ed Esempi
-
+Crea un oggetto di tipo spritesheet.
+```python
+	def get_image(self, frame, width, height, scale, colour):
+    image = pygame.Surface((width, height)).convert_alpha()
+    image.fill(colour)
+    image.blit(self.sheet, (0, 0), ((frame * width), 0, width, height))
+    image = pygame.transform.scale(image, (width * scale, height * scale))
+    return image
+```
+Gestisce i frame degli sprite.
 ## Ulteriori informazioni
 
-## Sprite & Assets
+### Sprite & Assets
 Gli sprite, o pixel-art del gioco sono stati disegnati attraverso il software Piskel, a mano. Ogni singolo disegno è originale, inoltre i disegni sono animati a 2 frame per secondo all'interno del gioco.
 
 ### Traguardi
