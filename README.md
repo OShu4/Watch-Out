@@ -66,7 +66,11 @@ Verifica di sconfitta (*PG_HP == "0"*), con uscita dalla scermata play e reindir
 
 -**set_level()** richiamata al click del pulsante Select Level nel menu. Permette, se e solo se il gioco e' gia precedentemente stato completato in modalita normale, di scegliere un livello da rigiocare.
 
--**menu()** 
+-**main_menu()** richiamata all'avvio del gioco, permette di scegliere cosa fare nel gioco:
+-PLAY
+-SET EASY -> cambia la difficolta del gioco.
+-SELECT LEVEL
+-QUIT
 
 ### - [-] button.py 
 - [-] fileManager.py
