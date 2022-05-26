@@ -92,12 +92,12 @@ Utilizzata da tutti i bottoni del gioco.
         self.overImage=overImage
 ```
 Costruttore di Button che, tra i parametri principali, riceve:
--**image** -> l'immagine di sfondo del bottone
--**pos** -> la posizione nella finestra del bottone
--**text_input** -> testo sul bottone
--**base_color** -> colore del testo mentre il bottone non e' overato
--**hovering_colot** -> colore del testo mentre il bottone e' overato
--**verImage** -> resize del immagine mentre il bottobe e' overato
+* **image** -> l'immagine di sfondo del bottone
+* **pos** -> la posizione nella finestra del bottone
+* **text_input** -> testo sul bottone
+* **base_color** -> colore del testo mentre il bottone non e' overato
+* **hovering_colot** -> colore del testo mentre il bottone e' overato
+* **verImage** -> resize del immagine mentre il bottobe e' overato
 
 ### - [-] fileManager.py
 file che gestisce la creazione, la scrittura e la lettura da file.
