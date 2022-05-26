@@ -62,7 +62,7 @@ Gli sprite, o pixel-art del gioco sono stati disegnati attraverso il software Pi
 - [✔️] Creazione di tutte le pixel-art.
 - [✔️] Sistema delle vite.
 
-### Sito Web
+## Sito Web
 - Collegamento: https://watch-out2022.000webhostapp.com/
 ## Contatti
 
