@@ -18,7 +18,7 @@ pygame.init()
 WIDTH, HEIGHT = 1290, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT)) 
 pygame.display.set_caption('Watch-Out!')
-programIcon = pygame.image.load('C:\Users\Corrado\Desktop\Watch-Out\output\main\applogo.png')
+programIcon = pygame.image.load('Watch-Out/src/main/python/assets/Logo/applogo.png')
 pygame.display.set_icon(programIcon)
 
 #definizione delle variabili globali. Colori, FPS, tempo di reazione dei nemici, statistiche dei personaggi, bool di controllo, etc.
@@ -32,6 +32,7 @@ lastUpdateProt=0.0
 lastUpdateEnemy=0.0
 PlaySize=370, 130
 OptionSize=360,115
+namePg=["Dummy", "Goblin", "Goblin", "Franco", "rafaR"]
 
 #inizializzazione dei PG.
 ENEMY_NUMBER = "0"
@@ -61,19 +62,18 @@ def get_font(size):
 
 def setEnemy():
     global ENEMY_PG_img, animationListEnemy, ENEMY_NUMBER, ENEMY_PG_W
-    path="Watch-Out/src/main/python/assets/Enemy/Enemy"+ENEMY_NUMBER+".png"
-    ENEMY_PG_img = pygame.image.load(path)
-    ENEMY_PG_img = spritesheet.SpriteSheet(ENEMY_PG_img)
+    if not ENEMY_NUMBER=="2":
+        path="Watch-Out/src/main/python/assets/Enemy/Enemy"+ENEMY_NUMBER+".png"
+        ENEMY_PG_img = pygame.image.load(path)
+        ENEMY_PG_img = spritesheet.SpriteSheet(ENEMY_PG_img)
 
-    path="Watch-Out/src/main/python/assets/Enemy/Json/Enemy"+ ENEMY_NUMBER +".json"
-    size=FileManager.JsonReader(path)
-    animationListEnemy.clear()
-    for x in range (2):
-        animationListEnemy.append(ENEMY_PG_img.get_image(x, size[0], size[1], 10, ((255,255,255,0))))
+        path="Watch-Out/src/main/python/assets/Enemy/Json/Enemy"+ ENEMY_NUMBER +".json"
+        size=FileManager.JsonReader(path)
+        animationListEnemy.clear()
+        print(size[0])
+        for x in range (2):
+            animationListEnemy.append(ENEMY_PG_img.get_image(x, size[0], size[1], 10, ((255,255,255,0))))
     
-    ENEMY_PG_W=90
-    if ENEMY_NUMBER =="1":
-        ENEMY_PG_W=130
 
 #conta il tempo di reazione che il player impiega nel cliccare dal via. se il tempo batte il record viene scritto nel file data.bin
 def timer():
@@ -132,12 +132,10 @@ def animation(OWN_PG, ENEMY_PG):
     return
 
 
-    
-
 #si occupa di disegnare la finestra di gioco durante play
 def background_window(OWN_PG, ENEMY_PG, EXIT, MENU_MOUSE_POS, ):
 
-    global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER, PG_HP
+    global ENEMY_bullets, CANFIRE, OWN_bullets, FIRED, ENEMY_NUMBER, PG_HP, namePg
 
     if OWN_bullets:
         pygame.draw.rect(WIN, B, OWN_bullets)
@@ -151,6 +149,8 @@ def background_window(OWN_PG, ENEMY_PG, EXIT, MENU_MOUSE_POS, ):
     draw_text = get_font(15).render(str(PG_HP), 1, B)
     WIN.blit(draw_text, (965, 55))
     WIN.blit(HP_img, (1000, 50))
+    levelText = get_font(28).render(namePg[int(ENEMY_NUMBER)], 1,"#57a3f2")
+    WIN.blit(levelText, (WIDTH/2-65, 100))
 
     draw_text = get_font(18).render("LEVEL "+str(ENEMY_NUMBER), 1, B)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() / 2, 55))
@@ -236,8 +236,8 @@ def check_fire(OWN_PG):
     global CANFIRE, FIRED, OWN_bullets, LOSE, PG_HP
     if CANFIRE and not FIRED:
         s = 'Watch-Out/src/main/python/assets/Enemy/Music/'
-        ouch = pygame.mixer.Sound(os.path.join(s, 'pistola.wav'))
-        pygame.mixer.Sound.play(ouch)
+       # ouch = pygame.mixer.Sound(os.path.join(s, 'pistola.wav'))
+       # pygame.mixer.Sound.play(ouch)
         OWN_bullets = pygame.Rect(OWN_PG.x + OWN_PG_H//2 - 5, OWN_PG.y + 5, 10, 5)
         LOSE = False
         FIRED = True
@@ -273,7 +273,7 @@ def play(N):
         Return=False
         if not EASY_DIFF:
             fin = ' '.join(format(ord(x), 'b') for x in "completed")
-            FileManager.writeTO(fin, 0, "fin")
+            FileManager.writeTO(fin, "fin")
         draw_winner("GAME OVER!", False, G)
 
     while(DIE == True):
@@ -338,19 +338,11 @@ def play(N):
         ENEMY_handle_bullet(OWN_PG)
         background_window(OWN_PG, ENEMY_PG, EXIT, MENU_MOUSE_POS)
 
-
-def change_difficult():
-    global EASY_DIFF
-    if EASY_DIFF:
-        EASY_DIFF = False
-    else:
-        EASY_DIFF = True
-    return
-
 def set_level(): 
-    global overImageP, overImageO, imageOption
+    global overImageP, overImageO, imageOption, namePG
     CurrentLevel=0
 
+    
     BackGround=pygame.image.load("Watch-Out/src/main/python/assets/Background/settingBackground.png")
     BackGroundSetLevel=pygame.image.load("Watch-Out/src/main/python/assets/Background/levelSet.png")
     arrowImageUp=pygame.image.load("Watch-Out/src/main/python/assets/Background/Arrow.png")
@@ -360,7 +352,6 @@ def set_level():
     arrowImageUp=pygame.transform.scale(arrowImageUp, (150,80))
     arrowImageDown=pygame.transform.rotate(arrowImageUp, 180)
     arrowImageDown=pygame.transform.scale(arrowImageDown, (150,80))
-
     arrowImageUpOver=pygame.transform.scale(arrowImageUp, (160,85))
     arrowImageDownOver=pygame.transform.scale(arrowImageDown, (160,85))
 
@@ -377,7 +368,7 @@ def set_level():
 
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
         WIN.blit(BackGround, (0,0))
-
+        ShowName=get_font(32).render(namePg[CurrentLevel], 1,"#db3412")
         levelText = get_font(22).render(("LEVEL  "+ str(CurrentLevel)), 1,"#57a3f2")
         for button in [ButtonLevelUp, ButtonLevelDown, PLAY_BUTTON]:
             button.mouseOver(OPTIONS_MOUSE_POS, 45)
@@ -386,6 +377,7 @@ def set_level():
         EXIT.changeColor(OPTIONS_MOUSE_POS)
         EXIT.update(WIN)
         WIN.blit(BackGroundSetLevel, (WIDTH/2-340, HEIGHT/2-250))
+        WIN.blit(ShowName, (WIDTH/2-70, HEIGHT/2-40))
         WIN.blit(levelText, (WIDTH/2-70, HEIGHT/2-100))
         key_input = pygame.key.get_pressed()
 
@@ -488,7 +480,7 @@ def main_menu():
                 elif PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     play("0")
                 elif CHANGE_DIFFICULT.checkForInput(MENU_MOUSE_POS):
-                    change_difficult()
+                    EASY_DIFF=not EASY_DIFF
                 elif SELECT_LEVEL.checkForInput(MENU_MOUSE_POS):
                     checkForSelect()
                
@@ -508,7 +500,7 @@ def main_menu():
                     if pos == 0:
                         play("0")
                     elif pos == 1:
-                        change_difficult()
+                        EASY_DIFF=not EASY_DIFF
                     elif pos == 2:
                         checkForSelect()
                     else:

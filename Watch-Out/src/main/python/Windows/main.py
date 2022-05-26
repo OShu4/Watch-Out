@@ -18,7 +18,7 @@ pygame.init()
 WIDTH, HEIGHT = 1290, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT)) 
 pygame.display.set_caption('Watch-Out!')
-programIcon = pygame.image.load('Watch-Out\output\main\applogo.png')
+programIcon = pygame.image.load('Watch-Out/src/main/python/assets/Logo/applogo.png')
 pygame.display.set_icon(programIcon)
 
 #definizione delle variabili globali. Colori, FPS, tempo di reazione dei nemici, statistiche dei personaggi, bool di controllo, etc.
@@ -26,7 +26,7 @@ W, B, R, G, LIGHT_G= (255, 255, 255), (0, 0, 0), (255,0, 0), (0, 255, 0), (184, 
 FPS = 120
 OWN_PG_H, OWN_PG_W, BULLET_VEL,PG_HP = 90, 80, 8,5
 ENEMY_PG_W, ENEMY_PG_H= 90, 80
-LEVELDIFF = [0, 0.31, 0.29, 0.28, 0.25]
+LEVELDIFF = [0, 0.35, 0.30, 0.26, 0.22]
 CANFIRE, FIRED, DIE, isMENU, LOSE, BESTSCORE, EASY_DIFF, Return = False, False, False, True, NULL, 0.0, False, False
 lastUpdateProt=0.0
 lastUpdateEnemy=0.0
@@ -61,19 +61,21 @@ def get_font(size):
 
 def setEnemy():
     global ENEMY_PG_img, animationListEnemy, ENEMY_NUMBER, ENEMY_PG_W
-    path="Watch-Out/src/main/python/assets/Enemy/Enemy"+ENEMY_NUMBER+".png"
-    ENEMY_PG_img = pygame.image.load(path)
-    ENEMY_PG_img = spritesheet.SpriteSheet(ENEMY_PG_img)
+    if not ENEMY_NUMBER=="3":
+        path="Watch-Out/src/main/python/assets/Enemy/Enemy"+ENEMY_NUMBER+".png"
+        print(path)
+        ENEMY_PG_img = pygame.image.load(path)
+        ENEMY_PG_img = spritesheet.SpriteSheet(ENEMY_PG_img)
 
-    path="Watch-Out/src/main/python/assets/Enemy/Json/Enemy"+ ENEMY_NUMBER +".json"
-    size=FileManager.JsonReader(path)
-    animationListEnemy.clear()
-    for x in range (2):
-        animationListEnemy.append(ENEMY_PG_img.get_image(x, size[0], size[1], 10, ((255,255,255,0))))
-    
-    ENEMY_PG_W=90
-    if ENEMY_NUMBER =="1":
-        ENEMY_PG_W=130
+        path="Watch-Out/src/main/python/assets/Enemy/Json/Enemy"+ ENEMY_NUMBER +".json"
+        size=FileManager.JsonReader(path)
+        animationListEnemy.clear()
+        for x in range (2):
+            animationListEnemy.append(ENEMY_PG_img.get_image(x, size[0], size[1], 10, ((255,255,255,0))))
+        
+        ENEMY_PG_W=90
+        if ENEMY_NUMBER =="1":
+            ENEMY_PG_W=130
 
 #conta il tempo di reazione che il player impiega nel cliccare dal via. se il tempo batte il record viene scritto nel file data.bin
 def timer():
@@ -84,7 +86,7 @@ def timer():
             return
         if FIRED and not LOSE:
             end = time.time()
-            reaction=round(end-start, 2)-((end-start)/7)
+            reaction=round(((end-start)-((end-start)/7)),  2)
             if reaction < float(BESTSCORE) or BESTSCORE == 0.0:
                 FileManager.writeTO(reaction, "data")
             return
@@ -236,8 +238,8 @@ def check_fire(OWN_PG):
     global CANFIRE, FIRED, OWN_bullets, LOSE, PG_HP
     if CANFIRE and not FIRED:
         s = 'Watch-Out/src/main/python/assets/Enemy/Music/'
-        ouch = pygame.mixer.Sound(os.path.join(s, 'pistola.wav'))
-        pygame.mixer.Sound.play(ouch)
+        #ouch = pygame.mixer.Sound(os.path.join(s, 'pistola.wav'))
+        #pygame.mixer.Sound.play(ouch)
         OWN_bullets = pygame.Rect(OWN_PG.x + OWN_PG_H//2 - 5, OWN_PG.y + 5, 10, 5)
         LOSE = False
         FIRED = True
@@ -273,7 +275,7 @@ def play(N):
         Return=False
         if not EASY_DIFF:
             fin = ' '.join(format(ord(x), 'b') for x in "completed")
-            FileManager.writeTO(fin, 0, "fin")
+            FileManager.writeTO(fin, "fin")
         draw_winner("GAME OVER!", False, G)
 
     while(DIE == True):
