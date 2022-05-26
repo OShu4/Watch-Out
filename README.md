@@ -69,7 +69,7 @@ Gli sprite, o pixel-art del gioco sono stati disegnati attraverso il software Pi
 ## Licenza
 MIT License
 
-Copyright (c) 2022 Corrado Galantini
+Copyright © 2022 Corrado Galantini
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
