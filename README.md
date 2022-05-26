@@ -37,7 +37,8 @@ Inoltre il giocatore, sempre nella schermata di gioco, in alto a destra, trover�
 ## Classi
 ### - [-] main.py  
 Classe gestisce le interazioni di gioco. Le funzioni principali presenti nella classe sono:
--**play()** che viene richiamata al click del pulsante Play nel menu. Compone la struttura principale di gioco.
+
+* **play()** che viene richiamata al click del pulsante Play nel menu. Compone la struttura principale di gioco.
 ```python
  while True:
       clock.tick(FPS)
@@ -64,10 +65,10 @@ While che si ripete 120 volte (FPS) e controlla eventuali eventi:
 Verifica della vittoria (*ENEMY_NUMBER == "5"*), con conseguente creazione del file fin.bin nel caso di gioco completato in normal.
 Verifica di sconfitta (*PG_HP == "0"*), con uscita dalla scermata play e reindirizzamento al menu.
 
--**set_level()** 
+* **set_level()** 
 Richiamata al click del pulsante Select Level nel menu. Permette, se e solo se il gioco è gia precedentemente stato completato in modalita normale, di scegliere un livello da rigiocare.
 
--**main_menu()** 
+* **main_menu()** 
 Richiamata all'avvio del gioco, permette di scegliere cosa fare nel gioco:
 * PLAY  
 * SET EASY -> Cambia la difficoltà del gioco.
