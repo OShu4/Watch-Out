@@ -172,7 +172,8 @@ Gli sprite, o pixel-art del gioco sono stati disegnati attraverso il software Pi
 ## Sito Web
 - Collegamento: https://watch-out2022.000webhostapp.com/
 - Sviluppato con HTML, CSS, raccolta di strumenti BOOTSTRAP 5.
-- 
+- Sul sito sono presenti una wiki e il download del gioco.
+
 ## Licenza
 MIT License
 
