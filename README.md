@@ -3,7 +3,7 @@
 ## Introduzione al progetto
 
 ### Scopo del programma: 
-##### Creazione di un reaction-game strutturato in 5 livelli. Il giocatore affronterà quindi 5 diversi nemici, con stage a difficoltà crescente, con sempre meno tempo per agire, in un ambiente retrò coinvolgente.
+Creazione di un reaction-game strutturato in 5 livelli. Il giocatore affronterà quindi 5 diversi nemici, con stage a difficoltà crescente, con sempre meno tempo per agire, in un ambiente retrò coinvolgente.
 
 ## Sviluppato con 
 - Python, libreria pygame
@@ -36,7 +36,7 @@ Inoltre il giocatore, sempre nella schermata di gioco, in alto a destra, trover�
 
 ## Classi
 ### - [-] main.py  
-classe gestisce le interazioni di gioco. Le funzioni principali presenti nella classe sono:
+Classe gestisce le interazioni di gioco. Le funzioni principali presenti nella classe sono:
 -**play()** che viene richiamata al click del pulsante Play nel menu. Compone la struttura principale di gioco.
 ```python
  while True:
@@ -64,11 +64,13 @@ While che si ripete 120 volte (FPS) e controlla eventuali eventi:
 Verifica della vittoria (*ENEMY_NUMBER == "5"*), con conseguente creazione del file fin.bin nel caso di gioco completato in normal.
 Verifica di sconfitta (*PG_HP == "0"*), con uscita dalla scermata play e reindirizzamento al menu.
 
--**set_level()** richiamata al click del pulsante Select Level nel menu. Permette, se e solo se il gioco e' gia precedentemente stato completato in modalita normale, di scegliere un livello da rigiocare.
+-**set_level()** 
+Richiamata al click del pulsante Select Level nel menu. Permette, se e solo se il gioco è gia precedentemente stato completato in modalita normale, di scegliere un livello da rigiocare.
 
--**main_menu()** richiamata all'avvio del gioco, permette di scegliere cosa fare nel gioco:
+-**main_menu()** 
+Richiamata all'avvio del gioco, permette di scegliere cosa fare nel gioco:
 * PLAY  
-* SET EASY -> cambia la difficolta del gioco
+* SET EASY -> Cambia la difficoltà del gioco.
 * SELECT LEVEL 
 * QUIT 
 
@@ -92,15 +94,15 @@ Utilizzata da tutti i bottoni del gioco.
         self.overImage=overImage
 ```
 Costruttore di Button che, tra i parametri principali, riceve:
-* **image** -> l'immagine di sfondo del bottone
-* **pos** -> la posizione nella finestra del bottone
-* **text_input** -> testo sul bottone
-* **base_color** -> colore del testo mentre il bottone non e' overato
-* **hovering_colot** -> colore del testo mentre il bottone e' overato
-* **verImage** -> resize del immagine mentre il bottobe e' overato
+* **image** -> L'immagine di sfondo del bottone.
+* **pos** -> La posizione nella finestra del bottone.
+* **text_input** -> Testo sul bottone.
+* **base_color** -> Colore del testo mentre il bottone non è hoverato.
+* **hovering_colot** -> Colore del testo mentre il bottone è hoverato.
+* **verImage** -> Resize del immagine mentre il bottobe è hoverato.
 
 ### - [-] fileManager.py
-file che gestisce la creazione, la scrittura e la lettura da file.
+File che gestisce la creazione, la scrittura e la lettura da file.
 ```python
 
     def writeTO(time, file):
@@ -113,7 +115,7 @@ file che gestisce la creazione, la scrittura e la lettura da file.
               f.write(bytearray(time, "utf8"))
          return
 ```
-Scrittura su *file*. Separa la possibilita in cui il testo in input sia float o string
+Scrittura su *file*. Separa la possibilità in cui il testo in input sia float o string.
 
 ```python
     def getToFile(file):
@@ -140,7 +142,7 @@ Legge da file binari.
         size =[w,h] 
         return size
 ```
-Legge da file Json altezza e spessore degli sprite
+Legge da file Json altezza e spessore degli sprite.
 
 ### - [-] spritesheet.py
 Crea un oggetto di tipo spritesheet.
@@ -165,6 +167,7 @@ Gli sprite, o pixel-art del gioco sono stati disegnati attraverso il software Pi
 - [✔️] Salvataggio dei dati in file binari. (Dati del punteggio del giocatore, e dati del completamento dei livelli.)
 - [✔️] Creazione di tutte le pixel-art.
 - [✔️] Sistema delle vite.
+- [✔️] Musica di gioco.
 
 ## Sito Web
 - Collegamento: https://watch-out2022.000webhostapp.com/
